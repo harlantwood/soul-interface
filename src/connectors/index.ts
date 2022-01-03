@@ -97,6 +97,10 @@ export const injected = new InjectedConnector({
   supportedChainIds,
 })
 
+export const bridgeInjected = new InjectedConnector({
+  supportedChainIds,
+})
+
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
   rpc: { [ChainId.MAINNET]: RPC[ChainId.MAINNET] },
