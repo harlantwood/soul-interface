@@ -4,7 +4,7 @@ import { AddressZero } from '@ethersproject/constants'
 import { Contract } from '@ethersproject/contracts'
 import { Web3Provider } from '@ethersproject/providers'
 import { COFFIN_BOX_ADDRESS, ChainId, WNATIVE } from 'sdk'
-import UNDERWORLDPAIR_ABI from 'constants/abis/underworldpair.json'
+import UNDERWORLD_PAIR_ABI from 'constants/abis/underworldpair.json'
 import { toShare } from 'functions/coffinbox'
 import { getProviderOrSigner, getSigner } from 'functions/contract'
 import { ZERO } from 'functions/math'
@@ -41,7 +41,7 @@ export async function signMasterContractApproval(
     },
     primaryType: 'SetMasterContractApproval',
     domain: {
-      name: 'CoffinBox',
+      name: 'CoffinBox V1',
       chainId: chainId,
       verifyingContract: coffinBoxContract?.address,
     },
@@ -129,7 +129,7 @@ export default class UnderworldCooker {
     return this
   }
 
-  coffinDepositAssetShare(share: number): UnderworldCooker {
+  coffinDepositAssetShare(share: BigNumber): UnderworldCooker {
     const useNative = this.pair.asset.address === WNATIVE[this.chainId].address
 
     this.add(
@@ -159,7 +159,7 @@ export default class UnderworldCooker {
     return this
   }
 
-  coffinWithdrawCollateral(amount: number, share: number): UnderworldCooker {
+  coffinWithdrawCollateral(amount: BigNumber, share: BigNumber): UnderworldCooker {
     const useNative = this.pair.collateral.address === WNATIVE[this.chainId].address
 
     this.add(
@@ -174,7 +174,7 @@ export default class UnderworldCooker {
     return this
   }
 
-  coffinTransfer(share: number, toAddress: string): UnderworldCooker {
+  coffinTransfer(share: BigNumber, toAddress: string): UnderworldCooker {
     this.add(
       Action.COFFIN_TRANSFER,
       defaultAbiCoder.encode(['address', 'address', 'int256'], [COFFIN_BOX_ADDRESS[this.chainId], toAddress, share])
@@ -183,7 +183,7 @@ export default class UnderworldCooker {
     return this
   }
 
-  coffinTransferCollateral(share: number, toAddress: string): UnderworldCooker {
+  coffinTransferCollateral(share: BigNumber, toAddress: string): UnderworldCooker {
     this.add(
       Action.COFFIN_TRANSFER,
       defaultAbiCoder.encode(['address', 'address', 'int256'], [this.pair.collateral.address, toAddress, share])
@@ -192,7 +192,7 @@ export default class UnderworldCooker {
     return this
   }
 
-  coffinTransferAsset(share: number, toAddress: string): UnderworldCooker {
+  coffinTransferAsset(share: BigNumber, toAddress: string): UnderworldCooker {
     this.add(
       Action.COFFIN_TRANSFER,
       defaultAbiCoder.encode(['address', 'address', 'int256'], [this.pair.asset.address, toAddress, share])
@@ -207,10 +207,10 @@ export default class UnderworldCooker {
     return this
   }
 
-  addCollateral(amount: number, fromCoffin: boolean): UnderworldCooker {
-    let share: number
+  addCollateral(amount: BigNumber, fromCoffin: boolean): UnderworldCooker {
+    let share: BigNumber
     if (fromCoffin) {
-      share = amount < 0 ? amount : toShare(this.pair.collateral, amount)
+      share = amount.lt(0) ? amount : toShare(this.pair.collateral, amount)
     } else {
       const useNative = this.pair.collateral.address === WNATIVE[this.chainId].address
 
@@ -222,15 +222,15 @@ export default class UnderworldCooker {
         ),
         useNative ? amount : ZERO
       )
-      share = -2
+      share = BigNumber.from(-2)
     }
 
     this.add(Action.ADD_COLLATERAL, defaultAbiCoder.encode(['int256', 'address', 'bool'], [share, this.account, false]))
     return this
   }
 
-  addAsset(amount: number, fromCoffin: boolean, burnShare: boolean = false): UnderworldCooker {
-    let share: number
+  addAsset(amount: BigNumber, fromCoffin: boolean, burnShare: boolean = false): UnderworldCooker {
+    let share: BigNumber
     if (fromCoffin) {
       share = toShare(this.pair.asset, amount)
     } else {
@@ -244,14 +244,14 @@ export default class UnderworldCooker {
         ),
         useNative ? amount : ZERO
       )
-      share = -2
+      share = BigNumber.from(-2)
     }
 
     this.add(Action.ADD_ASSET, defaultAbiCoder.encode(['int256', 'address', 'bool'], [share, this.account, false]))
 
     if (burnShare) {
       this.removeAsset(BigNumber.from(1), true)
-      this.coffinTransferAsset(1, '0x000000000000000000000000000000000000dead')
+      this.coffinTransferAsset(BigNumber.from(1), '0x000000000000000000000000000000000000dead')
     }
 
     return this
@@ -273,7 +273,7 @@ export default class UnderworldCooker {
     return this
   }
 
-  removeCollateral(share: number, toCoffin: boolean): UnderworldCooker {
+  removeCollateral(share: BigNumber, toCoffin: boolean): UnderworldCooker {
     this.add(Action.REMOVE_COLLATERAL, defaultAbiCoder.encode(['int256', 'address'], [share, this.account]))
     if (!toCoffin) {
       const useNative = this.pair.collateral.address === WNATIVE[this.chainId].address
@@ -342,7 +342,7 @@ export default class UnderworldCooker {
     return this
   }
 
-  repayPart(part: number, fromCoffin: boolean): UnderworldCooker {
+  repayPart(part: BigNumber, fromCoffin: boolean): UnderworldCooker {
     if (!fromCoffin) {
       const useNative = this.pair.asset.address === WNATIVE[this.chainId].address
 
@@ -354,7 +354,7 @@ export default class UnderworldCooker {
           [useNative ? AddressZero : this.pair.asset.address, this.account, 0, -1]
         ),
         // TODO: Put some warning in the UI or not allow repaying ETH directly from wallet, because this can't be pre-calculated
-        useNative ? toShare(this.pair.asset, toElastic(this.pair.totalBorrow, part, true)) * 1001 / 1000 : 0
+        useNative ? toShare(this.pair.asset, toElastic(this.pair.totalBorrow, part, true)).mul(1001).div(1000) : ZERO
       )
     }
     this.add(Action.REPAY, defaultAbiCoder.encode(['int256', 'address', 'bool'], [part, this.account, false]))
@@ -386,16 +386,16 @@ export default class UnderworldCooker {
       }
     }
 
-    const coffinPairCloneContract = new Contract(
+    const underworldPairCloneContract = new Contract(
       this.pair.address,
-      UNDERWORLDPAIR_ABI,
+      UNDERWORLD_PAIR_ABI,
       getProviderOrSigner(this.library, this.account) as any
     )
 
     try {
       return {
         success: true,
-        tx: await coffinPairCloneContract.cook(this.actions, this.values, this.datas, {
+        tx: await underworldPairCloneContract.cook(this.actions, this.values, this.datas, {
           value: this.values.reduce((a, b) => a.add(b), ZERO),
         }),
       }
