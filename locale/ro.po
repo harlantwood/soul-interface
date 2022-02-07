@@ -776,6 +776,9 @@ msgstr ""
 msgid "LAUNCH"
 msgstr ""
 
+msgid "LEND"
+msgstr ""
+
 msgid "LIQUIDITY"
 msgstr ""
 

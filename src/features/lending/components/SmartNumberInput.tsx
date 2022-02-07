@@ -18,7 +18,7 @@ type SmartNumberInputProps = {
   setUseCoffin: any
 
   maxTitle?: string
-  max: number
+  max: BigNumber
   pinMax?: boolean
   setPinMax?: any
   showMax?: boolean
@@ -73,7 +73,7 @@ export default function SmartNumberInput({
           </span>
         </div>
         <div className="text-base text-right text-secondary" style={{ display: 'inline', cursor: 'pointer' }}>
-          {maxTitle} {formatNumber(max / 1e18)}
+          {maxTitle} {formatNumber(max.toFixed(token.tokenInfo.decimals))}
         </div>
       </div>
 
@@ -95,7 +95,7 @@ export default function SmartNumberInput({
           }}
           disabled={disabled}
         />
-        {showMax && Number(max) > 0 && (
+        {showMax && max.gt(0) && (
           <Button
             variant="outlined"
             size="xs"

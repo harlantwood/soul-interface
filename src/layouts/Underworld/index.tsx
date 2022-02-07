@@ -27,8 +27,8 @@ const Layout: FC<LayoutProps> = ({ left, children, right }) => {
                   <Image 
                     src= { BORROW_IMG }
                     alt="Underworld" 
-                    height={128} 
-                    width={500} 
+                    height={125} 
+                    width={360} 
                     placeholder="empty" 
                   />
                 </a>

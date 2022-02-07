@@ -170,7 +170,7 @@ export default function Create() {
     <CreateLayout>
       <Head>
         <title>Create Pair | Underworld by Soul</title>
-        <meta key="description" name="description" content="Create Lending Pair on Underworld by Soul" />
+        <meta key="description" name="description" content="Create Lending Pair in the Underworld by Soul" />
       </Head>
       <Card
         className="h-full bg-dark-900"

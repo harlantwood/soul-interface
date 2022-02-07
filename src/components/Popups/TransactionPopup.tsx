@@ -28,11 +28,11 @@ export default function TransactionPopup({
         </div>
         {chainId && hash && (
           <ExternalLink
-            className="p-0 text-blue hover:underline md:p-0"
+            className="p-0 text-pink hover:underline md:p-0"
             href={getExplorerLink(chainId, hash, 'transaction')}
           >
             <div className="flex flex-row items-center gap-1">
-              View on explorer <ExternalLinkIcon width={20} height={20} />
+              View on Explorer <ExternalLinkIcon width={20} height={20} />
             </div>
           </ExternalLink>
         )}

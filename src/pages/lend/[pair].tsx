@@ -21,7 +21,6 @@ export default function Pair() {
 
   const router = useRouter()
   const { i18n } = useLingui()
-
   const pair = useUnderworldPair(router.query.pair as string)
 
   if (!pair) return <div />

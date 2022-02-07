@@ -12,14 +12,13 @@ import Web3ReactManager from 'components/Web3ReactManager'
 import getLibrary from 'functions/getLibrary'
 import { exception, GOOGLE_ANALYTICS_TRACKING_ID, pageview } from 'functions/gtag'
 import DefaultLayout from 'layouts/Default'
-// @ts-ignore TYPE NEEDS FIXING
 import store, { persistor } from 'state'
 import ApplicationUpdater from 'state/application/updater'
 import ListsUpdater from 'state/lists/updater'
 import MulticallUpdater from 'state/multicall/updater'
 import TransactionUpdater from 'state/transactions/updater'
 import UserUpdater from 'state/user/updater'
-import * as plurals from 'make-plural/plurals'
+// import * as plurals from 'make-plural/plurals'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -35,19 +34,16 @@ if (typeof window !== 'undefined' && !!window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
 
-// @ts-ignore TYPE NEEDS FIXING
 function MyApp({ Component, pageProps, fallback }) {
   const router = useRouter()
   const { locale, events } = router
 
   useEffect(() => {
-    // @ts-ignore TYPE NEEDS FIXING
     const handleRouteChange = (url) => {
       pageview(url)
     }
     events.on('routeChangeComplete', handleRouteChange)
 
-    // @ts-ignore TYPE NEEDS FIXING
     const handleError = (error) => {
       exception({
         description: `${error.message} @ ${error.filename}:${error.lineno}:${error.colno}`,
@@ -64,30 +60,28 @@ function MyApp({ Component, pageProps, fallback }) {
   }, [events])
 
   useEffect(() => {
-    // @ts-ignore TYPE NEEDS FIXING
-    async function load(locale) {
-      // @ts-ignore TYPE NEEDS FIXING
-      i18n.loadLocaleData(locale, { plurals: plurals[locale.split('_')[0]] })
+    // async function load(locale) {
+    //   i18n.loadLocaleData(locale, { plurals: plurals[locale.split('_')[0]] })
 
-      try {
-        // Load messages from AWS, use q session param to get latest version from cache
-        const res = await fetch(
-          `https://raw.githubusercontent.com/sushiswap/translations/master/sushiswap/${locale}.json`
-        )
-        const remoteMessages = await res.json()
+    //   try {
+    //     // Load messages from AWS, use q session param to get latest version from cache
+    //     const res = await fetch(
+    //       `https://raw.githubusercontent.com/sushiswap/translations/master/sushiswap/${locale}.json`
+    //     )
+    //     const remoteMessages = await res.json()
 
-        const messages = remoteLoader({ messages: remoteMessages, format: 'minimal' })
-        i18n.load(locale, messages)
-      } catch {
-        // Load fallback messages
-        // const { messages } = await import(`@lingui/loader!./../../locale/${locale}.json?raw-lingui`)
-        // i18n.load(locale, messages)
-      }
+    //     const messages = remoteLoader({ messages: remoteMessages, format: 'minimal' })
+    //     i18n.load(locale, messages)
+    //   } catch {
+    //     // Load fallback messages
+    //     // const { messages } = await import(`@lingui/loader!./../../locale/${locale}.json?raw-lingui`)
+    //     // i18n.load(locale, messages)
+    //   }
 
-      i18n.activate(locale)
-    }
+    //   i18n.activate(locale)
+    // }
 
-    load(locale)
+    // load(locale)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale])
 

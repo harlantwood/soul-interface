@@ -789,6 +789,9 @@ msgstr "Korean"
 msgid "LAUNCH"
 msgstr "LAUNCH"
 
+msgid "LEND"
+msgstr "LEND"
+
 msgid "LIQUIDITY"
 msgstr "LIQUIDITY"
 

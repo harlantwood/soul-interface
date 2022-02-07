@@ -1,6 +1,6 @@
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber'
-import { USD } from 'sdk'
 import {
+  USD,
   FACTOR_PRECISION,
   FULL_UTILIZATION_MINUS_MAX,
   INTEREST_ELASTICITY,
@@ -15,12 +15,12 @@ import {
 
 import { e10, ZERO } from './math'
 
-export function accrue(pair: any, amount: number, includePrincipal = false): number {
-  return Number(amount)
-    * Number(pair.accrueInfo.interestPerSecond)
-    * Number(pair.elapsedSeconds)
-    / Number(1e18)
-    + (includePrincipal ? amount : 0)
+export function accrue(pair: any, amount: BigNumber, includePrincipal = false): BigNumber {
+  return amount
+    .mul(pair.accrueInfo.interestPerSecond)
+    .mul(pair.elapsedSeconds)
+    .div(e10(18))
+    .add(includePrincipal ? amount : ZERO)
 }
 
 export function accrueTotalAssetWithFee(pair: any): {
@@ -31,11 +31,11 @@ export function accrueTotalAssetWithFee(pair: any): {
     .mul(pair.accrueInfo.interestPerSecond)
     .mul(pair.elapsedSeconds.add('3600')) // Project an hour into the future
     .div(e10(18))
-  const feeAmount = extraAmount * Number(PROTOCOL_FEE) / Number(PROTOCOL_FEE_DIVISOR) // % of interest paid goes to fee
-  const feeFraction = feeAmount * Number(pair.totalAsset.base) / Number(pair.currentAllAssets.value)
+  const feeAmount = extraAmount.mul(PROTOCOL_FEE).div(PROTOCOL_FEE_DIVISOR) // % of interest paid goes to fee
+  const feeFraction = feeAmount.mulDiv(pair.totalAsset.base, pair.currentAllAssets.value)
   return {
     elastic: pair.totalAsset.elastic,
-    base: pair.totalAsset.base + feeFraction,
+    base: pair.totalAsset.base.add(feeFraction),
   }
 }
 
@@ -56,7 +56,7 @@ export function interestAccrue(pair: any, interest: BigNumber): BigNumber {
     currentInterest = currentInterest.mul(INTEREST_ELASTICITY).div(scale)
 
     if (currentInterest.lt(MINIMUM_INTEREST_PER_YEAR)) {
-      currentInterest = MINIMUM_INTEREST_PER_YEAR // 0.25% APR minimum
+      currentInterest = MINIMUM_INTEREST_PER_YEAR // MINIUMUM APR: 0.25%
     }
   } else if (pair.utilization.gt(MAXIMUM_TARGET_UTILIZATION)) {
     const overFactor = pair.utilization
@@ -65,58 +65,50 @@ export function interestAccrue(pair: any, interest: BigNumber): BigNumber {
     const scale = INTEREST_ELASTICITY.add(overFactor.mul(overFactor).mul(pair.elapsedSeconds))
     currentInterest = currentInterest.mul(scale).div(INTEREST_ELASTICITY)
     if (currentInterest.gt(MAXIMUM_INTEREST_PER_YEAR)) {
-      currentInterest = MAXIMUM_INTEREST_PER_YEAR // 1000% APR maximum
+      currentInterest = MAXIMUM_INTEREST_PER_YEAR // MAXIMUM APR: 1000%
     }
   }
   return currentInterest
 }
 
-export function getUSDValue(amount: number, token: any): number {
-  let decimals = token?.decimals ? token.decimals : token.tokenInfo.decimals
-  return amount ? 
-  amount * token.usd
-  / (10 ** decimals)
-  : null
+export function getUSDValue(amount: BigNumber, token: any): BigNumber {
+  return BigNumber.from(amount)
+    .mul(token.usd)
+    .div(e10(token?.decimals ? token.decimals : token.tokenInfo.decimals))
 }
 
-export function getUSDString(amount: number, token: any): string {
-  let decimals = token?.decimals ? token.decimals : token.tokenInfo.decimals
-  return amount ? (Number(amount)
-    * Number(token.usd)
-    / 10 ** decimals).toString()
-    // .toFixed(USD[token?.chainId ? token.chainId : token.tokenInfo.chainId].decimals)
-  : null
+export function getUSDString(amount: BigNumberish, token: any): string {
+  return BigNumber.from(amount)
+    .mul(token.usd)
+    .div(e10(token?.decimals ? token.decimals : token.tokenInfo.decimals))
+    .toFixed(USD[token?.chainId ? token.chainId : token.tokenInfo.chainId].decimals)
 }
 
 export function easyAmount(
-  amount: number,
+  amount: BigNumber,
   token: any
-): { value: number; string: string; usdValue: number; usd: string } {
-  // console.log('easyAmount', token)
+): { value: BigNumber; string: string; usdValue: BigNumber; usd: string } {
+  console.log('easyAmount', token)
   return {
     value: amount,
-    string: amount.toLocaleString(),
-    // (token?.decimals ? token.decimals : token.tokenInfo.decimals).toString(),
+    string: amount.toFixed(token?.decimals ? token.decimals : token.tokenInfo.decimals),
     usdValue: getUSDValue(amount, token),
     usd: getUSDString(amount, token),
   }
 }
 
-export function takeFee(amount: number): number {
-  return amount * 9 / 10
+export function takeFee(amount: BigNumber): BigNumber {
+  return amount.mul(BigNumber.from(9)).div(BigNumber.from(10))
 }
 
-export function addBorrowFee(amount: number): number {
-  return amount * 10005 / 10000
+export function addBorrowFee(amount: BigNumber): BigNumber {
+  return amount.mul(BigNumber.from(10005)).div(BigNumber.from(10000))
 }
 
 export function getFraction({
   totalAssetBase,
-  // @ts-ignore TYPE NEEDS FIXING
   totalAssetElastic,
-  // @ts-ignore TYPE NEEDS FIXING
   totalBorrowElastic,
-  // @ts-ignore TYPE NEEDS FIXING
   token0: { totalSupplyBase, totalSupplyElastic },
 }) {
   return totalAssetBase / (Number(totalAssetElastic) + (totalBorrowElastic * totalSupplyBase) / totalSupplyElastic)
