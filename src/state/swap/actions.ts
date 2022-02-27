@@ -1,9 +1,12 @@
 import { createAction } from '@reduxjs/toolkit'
+import { LeverageType } from 'sdk/enums/TradeType'
 
 export enum Field {
   INPUT = 'INPUT',
   OUTPUT = 'OUTPUT',
 }
+
+export const updateLeverageType = createAction<{ leverageType: LeverageType }>('swap/updateLeverageType')
 
 export const selectCurrency = createAction<{
   field: Field

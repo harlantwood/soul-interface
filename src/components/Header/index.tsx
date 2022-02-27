@@ -25,12 +25,24 @@ import Web3Network from '../Web3Network'
 import Web3Status from '../Web3Status'
 import { t } from '@lingui/macro'
 import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
-
+import styled from 'styled-components'
 import { useLingui } from '@lingui/react'
 import ExternalLink from '../ExternalLink'
 import TokenStats from '../TokenStats'
 import LuxorStats from 'components/LuxorStats'
 import { useActiveWeb3React } from 'services/web3'
+
+const GradientBorderButton = styled.div`
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    border: double 3px transparent;
+    border-radius: 80px;
+    background-image: linear-gradient(#0d0e21, #0d0e21), radial-gradient(circle at top left, #9e58dd, #ee82ee);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+`
 
 function AppBar(): JSX.Element {
   const { i18n } = useLingui()
@@ -60,7 +72,7 @@ function AppBar(): JSX.Element {
                       href="/exchange/swap">
                         <a
                           id={`swap-nav-link`}
-                          className="w-full relative ml-2 sm:ml-6 md:p-2 hover:text-purple text-high-emphesis"
+                          className="w-full sm:text-lg relative ml-2 sm:ml-6 md:p-2 hover:text-purple text-high-emphesis"
                         >
 
                           {i18n._(t`SWAP`)}
@@ -72,7 +84,7 @@ function AppBar(): JSX.Element {
                         href="/pool">
                           <a
                             id={`pool-nav-link`}
-                            className="w-full relative ml-6 md:p-2 hover:text-purple text-high-emphesis"
+                            className="w-full relative sm:text-lg ml-6 md:p-2 hover:text-purple text-high-emphesis"
                           >
                             {i18n._(t`POOL`)}
                           </a>
@@ -81,10 +93,10 @@ function AppBar(): JSX.Element {
                       {chainId && [ChainId.FANTOM].includes(chainId) && (
                         <NavLink 
                         activeClassName="text-purple text-high-emphesis"
-                        href={'/mines?filter=active'}>
+                        href={'/mines'}>
                           <a
                             id={`farm-nav-link`}
-                            className="w-full relative ml-6 md:p-2 hover:text-purple text-high-emphesis"
+                            className="w-full relative sm:text-lg ml-6 md:p-2 hover:text-purple text-high-emphesis"
                           >
                             {i18n._(t`FARM`)}
                           </a>
@@ -95,7 +107,7 @@ function AppBar(): JSX.Element {
                       href={'/bonds'}>
                         <a
                           id={`bond-nav-link`}
-                          className="w-full relative ml-6 md:p-2 hover:text-purple text-high-emphesis"
+                          className="w-full relative sm:text-lg ml-6 md:p-2 hover:text-purple text-high-emphesis"
                         >
                           {i18n._(t`BOND`)}
                         </a>
@@ -105,7 +117,7 @@ function AppBar(): JSX.Element {
                       href={'/analytics'}>
                         <a
                           id={`analytics-nav-link`}
-                          className="w-full relative ml-6 md:p-2 hover:text-purple text-high-emphesis"
+                          className="w-full relative ml-6 sm:text-lg md:p-2 hover:text-purple text-high-emphesis"
                         >
                           {i18n._(t`DATA`)}
                         </a>
@@ -114,8 +126,8 @@ function AppBar(): JSX.Element {
                       activeClassName="text-purple text-high-emphesis"
                       href={'/borrow'}>
                         <a
-                          id={`lend-nav-link`}
-                          className="w-full relative ml-6 md:p-2 hover:text-purple text-high-emphesis"
+                          id={`borrow-nav-link`}
+                          className="w-full relative sm:text-lg ml-6 md:p-2 hover:text-purple text-high-emphesis"
                         >
                           {i18n._(t`BORROW`)}
                         </a>
@@ -125,7 +137,7 @@ function AppBar(): JSX.Element {
                       href={'/vote'}>
                         <a
                           id={`claims-nav-link`}
-                          className="hidden sm:block w-full relative ml-6 md:p-2 hover:text-purple text-high-emphesis"
+                          className="hidden sm:block w-full relative sm:text-lg ml-6 md:p-2 hover:text-purple text-high-emphesis"
                         >
                           {i18n._(t`VOTE`)}
                         </a>
@@ -135,7 +147,7 @@ function AppBar(): JSX.Element {
                       href={'/launchpad'}>
                         <a
                           id={`launch-nav-link`}
-                          className="hidden sm:block w-full relative ml-6 md:p-2 hover:text-purple text-high-emphesis"
+                          className="hidden md:block w-full md:text-lg relative ml-6 md:p-2 hover:text-purple text-high-emphesis"
                         >
                           {i18n._(t`LAUNCH`)}
                         </a>
@@ -146,7 +158,7 @@ function AppBar(): JSX.Element {
                       href={'/lend'}>
                         <a
                           id={`lend-nav-link`}
-                          className="hidden sm:block w-full relative ml-6 md:p-2 hover:text-purple text-high-emphesis"
+                          className="hidden sm:block w-full sm:text-lg relative ml-6 md:p-2 hover:text-purple text-high-emphesis"
                         >
                           {i18n._(t`LEND`)}
                         </a>
@@ -167,12 +179,12 @@ function AppBar(): JSX.Element {
 
                 <div className="fixed bottom-0 left-0 z-10 flex flex-row items-center justify-center w-full p-4 xl:w-auto bg-dark-1000 xl:relative xl:p-0 xl:bg-transparent">
                   <div className="flex items-center justify-between w-full space-x-2 sm:justify-end">
-                    {library && library.provider.isMetaMask && (
+                    {library && (
                       <div className="inline-block">
                         <LuxorStats />
                       </div>
                     )}
-                    {library && library.provider.isMetaMask && (
+                    {library && (
                       <div className="inline-block">
                         <TokenStats />
                       </div>
@@ -209,11 +221,13 @@ function AppBar(): JSX.Element {
                 </div>
                 <div className="hidden sm:flex -mr-2 xl:hidden">
                   {/* Mobile Menu Button */}
-                  <Popover.Button className="inline-flex items-center justify-center p-2 rounded-md text-primary hover:text-high-emphesis focus:outline-none">
+                  
+<Popover.Button className="inline-flex items-center justify-center p-4 rounded-md text-primary hover:text-high-emphesis focus:outline-none">
+                  <GradientBorderButton className="hidden lg:flex lg:text-white lg:h-full hover:text-primary">
                     <span className="sr-only">{i18n._(t`Open Main Menu`)}</span>
                     {open ? (
                       <svg
-                        className="block w-6 h-6"
+                        className="block w-8 h-4"
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -223,7 +237,7 @@ function AppBar(): JSX.Element {
                       </svg>
                     ) : (
                       <svg
-                        className="block w-6 h-6"
+                        className="block w-8 h-4"
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -238,6 +252,7 @@ function AppBar(): JSX.Element {
                         />
                       </svg>
                     )}
+                  </GradientBorderButton>
                   </Popover.Button>
                 </div>
               </div>

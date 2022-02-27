@@ -3,6 +3,7 @@ import { binance, clover, injected, walletconnect } from '../connectors'
 
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { BigNumber } from 'ethers'
+import { BSC, FANTOM } from './tokens'
 
 export const RPC = {
   [ChainId.ETHEREUM]: 'https://eth-mainnet.alchemyapi.io/v2/q1gSNoSMEzJms47Qn93f9-9Xg5clkmEC',
@@ -69,6 +70,23 @@ export const MERKLE_ROOT =
 //         [XSUSHI_CALL.address]: [XSUSHI, WETH[ChainId.ETHEREUM]],
 //     },
 // }
+
+// Environment dependant peg currency
+function getPegCurrency(chainId: ChainId | undefined) {
+  const pegCurrencyMap = {
+    // [ChainId.ETHEREUM]: USDT,
+    [ChainId.FANTOM]: FANTOM.DAI,
+    [ChainId.BSC]: BSC.DAI
+  }
+  if (chainId && chainId in pegCurrencyMap) {
+    return (pegCurrencyMap as any)[chainId]
+  } else {
+    return undefined
+  }
+}
+
+export { getPegCurrency as getPegCurrency }
+
 
 export interface WalletInfo {
   connector?: (() => Promise<AbstractConnector>) | AbstractConnector

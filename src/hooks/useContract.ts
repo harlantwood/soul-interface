@@ -116,6 +116,7 @@ import { getContract } from '../functions/contract'
 import { useActiveWeb3React } from 'services/web3'
 import { useMemo } from 'react'
 import { getVerifyingContract } from 'limitorderv2-sdk'
+import { Web3Provider } from '@ethersproject/providers'
 
 const UNI_FACTORY_ADDRESS = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
 
@@ -502,6 +503,10 @@ export function useLimitOrderHelperContract(withSignerIfPossible?: boolean): Con
   return useContract('0xd63E7D4eB9aB59bf85975c7100a5D92919C4E7E5', LIMIT_ORDER_HELPER_ABI, withSignerIfPossible)
 }
 
+// account is optional
+export function getMarginRouterContract(chainId: ChainId, library: Web3Provider, account?: string): Contract {
+  return getContract('0xb80d5989f2ecb199603740197ce9223b239547e0', LIMIT_ORDER_HELPER_ABI, library, account)
+}
 
 // ------- Bridge --------
 

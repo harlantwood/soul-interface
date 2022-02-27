@@ -31,7 +31,7 @@ const HeaderNew: FC<HeaderNewProps> = ({ inputCurrency, outputCurrency }) => {
   const isLimitOrder = asPath.startsWith('/limit-order')
 
   return (
-    <div className="flex items-center justify-between gap-1">
+    <div className="flex items-center justify-between">
       <div className="flex gap-4">
         <NavLink
           activeClassName="text-high-emphesis"
@@ -47,6 +47,17 @@ const HeaderNew: FC<HeaderNewProps> = ({ inputCurrency, outputCurrency }) => {
         <NavLink
           activeClassName="text-high-emphesis"
           href={{
+            pathname: '/exchange/margin',
+            query: getQuery(inputCurrency, outputCurrency),
+          }}
+        >
+          <Typography weight={700} className="text-secondary hover:text-white">
+            {i18n._(t`Leverage`)}
+          </Typography>
+        </NavLink>
+        {/* <NavLink
+          activeClassName="text-high-emphesis"
+          href={{
             pathname: '/limit-order',
             query: getQuery(inputCurrency, outputCurrency),
           }}
@@ -54,7 +65,7 @@ const HeaderNew: FC<HeaderNewProps> = ({ inputCurrency, outputCurrency }) => {
           <Typography weight={700} className="text-secondary hover:text-white">
             {i18n._(t`Limit`)}
           </Typography>
-        </NavLink>
+        </NavLink> */}
         <NavLink
           activeClassName="text-high-emphesis"
           href={`/${!isRemove ? 'add' : 'remove'}${inputCurrency ? `/${currencyId(inputCurrency)}` : '/FTM'}${

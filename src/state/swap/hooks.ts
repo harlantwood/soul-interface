@@ -4,12 +4,15 @@ import {
   ChainId,
   Currency,
   CurrencyAmount,
+  NATIVE,
   Percent,
   SOUL,
+  Token,
   Trade as V2Trade,
   TradeType,
   WNATIVE_ADDRESS,
 } from 'sdk'
+import { updateLeverageType } from './actions'
 import { tryParseAmount } from 'functions/parse'
 import { isAddress } from 'functions/validate'
 import { useCurrency } from 'hooks/Tokens'
@@ -18,10 +21,10 @@ import useParsedQueryString from 'hooks/useParsedQueryString'
 import useSwapSlippageTolerance from 'hooks/useSwapSlippageTollerence'
 import { useV2TradeExactIn as useTradeExactIn, useV2TradeExactOut as useTradeExactOut } from 'hooks/useV2Trades'
 import { useActiveWeb3React } from 'services/web3'
-import { AppState } from 'state'
+import { AppDispatch, AppState } from 'state'
 import { useAppDispatch, useAppSelector } from 'state/hooks'
 import { useExpertModeManager, useUserSingleHopOnly } from 'state/user/hooks'
-import { useCurrencyBalances } from 'state/wallet/hooks'
+import { useBorrowable, useCurrencyBalances } from 'state/wallet/hooks'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -32,29 +35,86 @@ import { useCallback, useEffect, useState } from 'react'
 // } from "../../hooks/useSwapCallback";
 import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies, typeInput } from './actions'
 import { SwapState } from './reducer'
+import { LeverageType } from 'sdk/enums/TradeType'
+import { useDispatch } from 'react-redux'
 
 export function useSwapState(): AppState['swap'] {
   return useAppSelector((state) => state.swap)
 }
 
+// export function useSwapActionHandlers(): {
+//   onCurrencySelection: (field: Field, currency: Currency) => void
+//   onSwitchTokens: () => void
+//   onUserInput: (field: Field, typedValue: string) => void
+//   onChangeRecipient: (recipient?: string | null) => void
+//   onSwitchLeverageType: (leverageType: number) => void
+// } {
+//   const dispatch = useAppDispatch()
+//   const onCurrencySelection = useCallback(
+//     (field: Field, currency: Currency) => {
+//       dispatch(
+//         selectCurrency({
+//           field,
+//           currencyId: currency.isToken
+//             ? currency.address
+//             : currency.isNative 
+//             // && currency.chainId !== ChainId.CELO
+//             ? 'FTM'
+//             : '',
+//         })
+//       )
+//     },
+//     [dispatch]
+//   )
+
+//   const onSwitchTokens = useCallback(() => {
+//     dispatch(switchCurrencies())
+//   }, [dispatch])
+
+//   const onUserInput = useCallback(
+//     (field: Field, typedValue: string) => {
+//       dispatch(typeInput({ field, typedValue }))
+//     },
+//     [dispatch]
+//   )
+
+//   const onChangeRecipient = useCallback(
+//     (recipient?: string) => {
+//       dispatch(setRecipient({recipient}))
+//     },
+//     [dispatch]
+//   )
+
+//   const onSwitchLeverageType = useCallback(
+//     (leverageType: number) => {
+//       dispatch(updateLeverageType({ leverageType }))
+//     },
+//     [dispatch]
+//   )
+
+//   return {
+//     onSwitchTokens,
+//     onCurrencySelection,
+//     onUserInput,
+//     onChangeRecipient,
+//     onSwitchLeverageType,
+//   }
+// }
+
 export function useSwapActionHandlers(): {
   onCurrencySelection: (field: Field, currency: Currency) => void
   onSwitchTokens: () => void
   onUserInput: (field: Field, typedValue: string) => void
-  onChangeRecipient: (recipient?: string | null) => void
+  onChangeRecipient: (recipient: string | null) => void
+  onSwitchLeverageType: (leverageType: number) => void
 } {
-  const dispatch = useAppDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const onCurrencySelection = useCallback(
     (field: Field, currency: Currency) => {
       dispatch(
         selectCurrency({
           field,
-          currencyId: currency.isToken
-            ? currency.address
-            : currency.isNative 
-            // && currency.chainId !== ChainId.CELO
-            ? 'FTM'
-            : '',
+          currencyId: currency instanceof Token ? currency.address : currency === NATIVE[250] ? 'FTM' : ''
         })
       )
     },
@@ -73,8 +133,15 @@ export function useSwapActionHandlers(): {
   )
 
   const onChangeRecipient = useCallback(
-    (recipient?: string) => {
-      dispatch(setRecipient({recipient}))
+    (recipient: string | null) => {
+      dispatch(setRecipient({ recipient }))
+    },
+    [dispatch]
+  )
+
+  const onSwitchLeverageType = useCallback(
+    (leverageType: number) => {
+      dispatch(updateLeverageType({ leverageType }))
     },
     [dispatch]
   )
@@ -84,10 +151,11 @@ export function useSwapActionHandlers(): {
     onCurrencySelection,
     onUserInput,
     onChangeRecipient,
+    onSwitchLeverageType
   }
 }
 
-// TODO: Swtich for ours...
+// TODO: Switch for ours...
 const BAD_RECIPIENT_ADDRESSES: { [chainId: string]: { [address: string]: true } } = {
   [ChainId.ETHEREUM]: {
     '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac': true, // v2 factory
@@ -116,6 +184,7 @@ export function useDerivedSwapInfo(): {
   currencies: { [field in Field]?: Currency }
   currencyBalances: { [field in Field]?: CurrencyAmount<Currency> }
   parsedAmount: CurrencyAmount<Currency> | undefined
+  marginAccountBalances?: { [field in Field]?: CurrencyAmount<Currency> }
   inputError?: string
   v2Trade: V2Trade<Currency, Currency, TradeType> | undefined
   allowedSlippage: Percent
@@ -142,6 +211,11 @@ export function useDerivedSwapInfo(): {
   ])
 
   const isExactIn: boolean = independentField === Field.INPUT
+  
+  const marginAccountBalances = {
+    [Field.INPUT]: relevantTokenBalances[0],
+    [Field.OUTPUT]: relevantTokenBalances[1]
+  }
 
   const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
 
@@ -154,10 +228,26 @@ export function useDerivedSwapInfo(): {
   })
 
   const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut
+  
+  // const { leverageType } = useSwapState()
+  const borrowBalance = useBorrowable(inputCurrency ?? undefined)
+
+  const relevantInput =
+    !!relevantTokenBalances[0] &&
+    !!borrowBalance &&
+    // leverageType === LeverageType.CROSS_MARGIN &&
+    borrowBalance.currency.symbol === relevantTokenBalances[0].currency.symbol
+      ? relevantTokenBalances[0]?.add(borrowBalance)
+      : relevantTokenBalances[0]
+
+  // const currencyBalances = {
+  //   [Field.INPUT]: relevantTokenBalances[0],
+  //   [Field.OUTPUT]: relevantTokenBalances[1],
+  // }
 
   const currencyBalances = {
-    [Field.INPUT]: relevantTokenBalances[0],
-    [Field.OUTPUT]: relevantTokenBalances[1],
+    [Field.INPUT]: relevantInput,
+    [Field.OUTPUT]: relevantTokenBalances[1]
   }
 
   const currencies: { [field in Field]?: Currency } = {
@@ -205,6 +295,7 @@ export function useDerivedSwapInfo(): {
     to,
     currencies,
     currencyBalances,
+    marginAccountBalances: marginAccountBalances ?? undefined,
     parsedAmount,
     inputError,
     v2Trade: v2Trade ?? undefined,
@@ -255,7 +346,7 @@ export function queryParametersToSwapState(parsedQs: ParsedQs, chainId: ChainId 
   }
 
   const recipient = validatedRecipient(parsedQs.recipient)
-
+  
   return {
     [Field.INPUT]: {
       currencyId: inputCurrency,
@@ -266,6 +357,7 @@ export function queryParametersToSwapState(parsedQs: ParsedQs, chainId: ChainId 
     typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
     independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
     recipient,
+    // leverageType: LeverageType.CROSS_MARGIN
   }
 }
 
@@ -288,6 +380,9 @@ export function useDefaultsFromURLSearch():
     | undefined
   >()
 
+  // const { leverageType } = useSwapState()
+
+
   useEffect(() => {
     if (!chainId) return
     const parsed = queryParametersToSwapState(parsedQs, chainId)
@@ -299,6 +394,7 @@ export function useDefaultsFromURLSearch():
         inputCurrencyId: parsed[Field.INPUT].currencyId,
         outputCurrencyId: parsed[Field.OUTPUT].currencyId,
         recipient: expertMode ? parsed.recipient : null,
+        // leverageType,
       })
     )
 

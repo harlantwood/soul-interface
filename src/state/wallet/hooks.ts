@@ -1,14 +1,23 @@
 import { Interface } from '@ethersproject/abi'
-import { Currency, CurrencyAmount, JSBI, NATIVE, Token } from 'sdk'
+import { Currency, 
+  CurrencyAmount, 
+  JSBI, 
+  NATIVE,
+  totalLendingAvailable,
+  Token, 
+  TokenAmount} from 'sdk'
 import ERC20_ABI from 'constants/abis/erc20.json'
 import { isAddress } from 'functions/validate'
 import { useAllTokens } from 'hooks/Tokens'
 import { useMulticall2Contract } from 'hooks/useContract'
 import { useActiveWeb3React } from 'services/web3'
 import { useMultipleContractSingleData, useSingleContractMultipleData } from 'state/multicall/hooks'
-import { useMemo } from 'react'
-
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { TokenInfo } from '@uniswap/token-lists'
 import { TokenBalancesMap } from './types'
+import { utils } from 'ethers'
+import { getProviderOrSigner } from 'functions'
+import { getPegCurrency } from 'constants/index'
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -154,31 +163,68 @@ export function useAllTokenBalancesWithLoadingIndicator() {
   return useTokenBalancesWithLoadingIndicator(account ?? undefined, allTokensArray)
 }
 
-// TODO: Replace
-// get the total owned, unclaimed, and unharvested UNI for account
-// export function useAggregateUniBalance(): CurrencyAmount<Token> | undefined {
-//   const { account, chainId } = useActiveWeb3React();
+export function useBorrowable(currency: Currency | undefined): CurrencyAmount<Token | Currency> | undefined {
+  const { library, chainId, account } = useActiveWeb3React()
+  const provider: any = getProviderOrSigner(library!)
+  const [balance, setBalance] = useState<CurrencyAmount<Token | Currency> | undefined>(undefined)
 
-//   const uni = chainId ? UNI[chainId] : undefined;
+  // const updateBorrowableBalance = useCallback(async () => {
+  //   const pegCurrency = getPegCurrency(chainId)
+  //   if (chainId && currency && account && pegCurrency) {
+  //     const bip = await borrowableInPeg(account, chainId, provider)
 
-//   const uniBalance: CurrencyAmount<Token> | undefined = useTokenBalance(
-//     account ?? undefined,
-//     uni
-//   );
-//   const uniUnclaimed: CurrencyAmount<Token> | undefined =
-//     useUserUnclaimedAmount(account);
-//   const uniUnHarvested: CurrencyAmount<Token> | undefined = useTotalUniEarned();
+  //     if (bip) {
+  //       const borrowableInPeg = new TokenAmount(pegCurrency, bip)
 
-//   if (!uni) return undefined;
+  //       const wrapped = wrappedCurrency(currency, chainId)
 
-//   return CurrencyAmount.fromRawAmount(
-//     uni,
-//     JSBI.add(
-//       JSBI.add(
-//         uniBalance?.quotient ?? JSBI.BigInt(0),
-//         uniUnclaimed?.quotient ?? JSBI.BigInt(0)
-//       ),
-//       uniUnHarvested?.quotient ?? JSBI.BigInt(0)
-//     )
-//   );
-// }
+  //       if (wrapped) {
+  //         const borrowableInTarget = await valueInPeg2token(borrowableInPeg, wrapped, chainId, provider)
+  //         if (borrowableInTarget) {
+  //           const result =
+  //             currency.name == 'Ether'
+  //               // ? CurrencyAmount.ether(borrowableInTarget.toString())
+  //               ? CurrencyAmount.ether(borrowableInTarget.toString())
+  //               : new TokenAmount(wrapped, borrowableInTarget.toString())
+
+  //           setBalance(result)
+  //         } else {
+  //           setBalance(undefined)
+  //         }
+  //       } else {
+  //         setBalance(undefined)
+  //       }
+  //     }
+  //   }
+  // }, [currency, setBalance])
+
+  useEffect(() => {
+    // updateBorrowableBalance()
+  }, [currency, ]) // updateBorrowableBalance
+  return balance
+}
+
+// get the total amount of liquidity / lending that is available for a given token
+export function useLendingAvailable(
+  chainId: number | undefined,
+  token: TokenInfo | undefined,
+  provider: any
+): CurrencyAmount<Token> | undefined {
+  const [lendingAvailable, setLendingAvailable] = useState<CurrencyAmount<Token> | undefined>()
+
+  const getLendingAvailable = async () => {
+    if (!chainId || !token) return
+    const tokenToken = new Token(chainId, token.address, token.decimals)
+    const result = ((await totalLendingAvailable(token.address, chainId, provider)) ?? utils.parseUnits('0')).toString()
+
+    setLendingAvailable(new TokenAmount(tokenToken, result))
+  }
+
+  useEffect(() => {
+    if (chainId && token && provider) {
+      getLendingAvailable()
+    }
+  }, [token?.symbol])
+
+  return lendingAvailable
+}
