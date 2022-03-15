@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 type AddressMap = { [chainId in ChainId]: string }
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-
+export const NATIVE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export const GENERIC_GAS_LIMIT_ORDER_EXECUTE = ethers.BigNumber.from(400000)
 
 export const CONTRACT_SCAN = {

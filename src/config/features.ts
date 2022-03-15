@@ -11,6 +11,7 @@ const features: FeatureMap = {
     // Feature.UNDERWORLD,
     // Feature.MIGRATE,
     Feature.ANALYTICS,
+    Feature.LIMIT,
     // Feature.STAKING,
     // Feature.MISO,
     // Feature.INARI,

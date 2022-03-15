@@ -102,15 +102,22 @@ function MyApp({ Component, pageProps, fallback, err }) {
 
   // Allows for conditionally setting a guard to be hoisted per page
   const Guard = Component.Guard || Fragment
+  // const { library, chainId, account } = useActiveWeb3React()
 
   function Gelato({ children }: { children?: React.ReactNode }) {
     const { library, chainId, account } = useActiveWeb3React()
     return (
-      <GelatoProvider library={library} chainId={chainId} account={account ?? undefined}>
-        {children}
+      <GelatoProvider
+      library={library}
+      chainId={chainId}
+      account={account ?? undefined}
+      handler={"soulswap"}
+      >
+      {children}
       </GelatoProvider>
     )
   }
+
   return (
     <>
       <Head>Soul</Head>

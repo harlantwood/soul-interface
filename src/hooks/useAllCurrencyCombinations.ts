@@ -2,10 +2,10 @@ import { Currency, Token } from 'sdk'
 import { useActiveWeb3React } from 'services/web3'
 import flatMap from 'lodash/flatMap'
 import { useMemo } from 'react'
-
+import { Handler } from 'types'
 import { ADDITIONAL_BASES, BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES } from '../config/routing'
 
-export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Currency): [Token, Token][] {
+export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Currency, handler?: Handler): [Token, Token][] {
   const { chainId } = useActiveWeb3React()
 
   const [tokenA, tokenB] = chainId ? [currencyA?.wrapped, currencyB?.wrapped] : [undefined, undefined]

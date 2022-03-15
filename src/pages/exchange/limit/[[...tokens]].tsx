@@ -1,16 +1,7 @@
 import { SwitchVerticalIcon } from '@heroicons/react/outline'
-import { t } from '@lingui/macro'
-import { useLingui } from '@lingui/react'
 import { Percent } from 'sdk'
 import limitOrderPairList from 'constants/token-lists/limitOrderPairList.json'
-import RecipientField from 'components/RecipientField'
-import Typography from 'components/Typography'
-import { ZERO_PERCENT } from '../../../constants'
 import { Feature } from 'enums'
-import LimitOrderApprovalCheck from 'features/limit/LimitOrderApprovalCheck'
-import LimitOrderButton from 'features/limit/LimitOrderButton'
-import LimitOrderReviewModal from 'features/limit/LimitOrderReviewModal'
-import LimitPriceInputPanel from 'features/limit/LimitPriceInputPanel'
 // import OrderExpirationDropdown from 'features/limit/components/OrderExpirationDropdown'
 import HeaderNew from 'features/trade/HeaderNew'
 import SwapAssetPanel from 'features/trident/swap/SwapAssetPanel'
@@ -18,7 +9,6 @@ import NetworkGuard from 'guards/Network'
 import { SwapLayout, SwapLayoutCard } from 'layouts/SwapLayout'
 import { useActiveWeb3React } from 'services/web3'
 import { useAppDispatch } from 'state/hooks'
-import { Field, setRecipient } from 'state/limit-order/actions'
 import useLimitOrderDerivedCurrencies, {
   useLimitOrderActionHandlers,
   useLimitOrderDerivedLimitPrice,
@@ -28,64 +18,59 @@ import useLimitOrderDerivedCurrencies, {
 } from 'state/limit-order/hooks'
 import { useExpertModeManager } from 'state/user/hooks'
 import React, { useMemo } from 'react'
-import NavLink from 'components/NavLink'
-import Badge from 'components/Badge'
-import useLimitOrders from 'features/limit/hooks/useLimitOrders'
-import { GelatoLimitOrderPanel, GelatoLimitOrdersHistoryPanel } from 'soulswap-limit-orders-react'
-import DoubleGlowShadowV2 from 'components/DoubleGlowShadowV2'
-import MainHeader from 'features/swap/MainHeader'
-
+// import useLimitOrders from 'features/limit/hooks/useLimitOrders'
+import { GelatoLimitOrdersHistoryPanel, GelatoLimitOrderPanel } from 'soulswap-limit-orders-react'
+import LimitOrderPanel from 'components/LimitOrder'
 
 const LimitOrder = () => {
-  const { i18n } = useLingui()
-  const dispatch = useAppDispatch()
-  const { chainId } = useActiveWeb3React()
-  const [isExpertMode] = useExpertModeManager()
-  const { typedField, typedValue, fromCoffinBalance, recipient } = useLimitOrderState()
+  // const dispatch = useAppDispatch()
+  // const { chainId } = useActiveWeb3React()
+  // const [isExpertMode] = useExpertModeManager()
+  // const { typedField, typedValue, fromCoffinBalance, recipient } = useLimitOrderState()
   const { inputCurrency, outputCurrency } = useLimitOrderDerivedCurrencies()
-  const { pending } = useLimitOrders()
+  // const { pending } = useLimitOrders()
   const trade = useLimitOrderDerivedTrade()
   const rate = useLimitOrderDerivedLimitPrice()
   const parsedAmounts = useLimitOrderDerivedParsedAmounts({ rate, trade })
   const { onSwitchTokens, onCurrencySelection, onUserInput } = useLimitOrderActionHandlers()
 
-  const pairs = useMemo(
-    () => (limitOrderPairList.pairs[chainId || 1] || []).map(([token0, token1]) => [token0.address, token1.address]),
-    [chainId]
-  )
+  // const pairs = useMemo(
+  //   () => (limitOrderPairList.pairs[chainId || 1] || []).map(([token0, token1]) => [token0.address, token1.address]),
+  //   [chainId]
+  // )
 
-  const inputPanelHelperText = useMemo(() => {
-    if (rate && trade) {
-      const { numerator, denominator } = rate.subtract(trade.executionPrice).divide(trade.executionPrice)
-      return new Percent(numerator, denominator)
-    }
-  }, [rate, trade])
+  // const inputPanelHelperText = useMemo(() => {
+  //   if (rate && trade) {
+  //     const { numerator, denominator } = rate.subtract(trade.executionPrice).divide(trade.executionPrice)
+  //     return new Percent(numerator, denominator)
+  //   }
+  // }, [rate, trade])
 
-  const inputTokenList = useMemo(() => {
-    if (pairs.length === 0) return []
-    return pairs.reduce((acc, [token0, token1]) => {
-      acc.push(token0)
-      acc.push(token1)
-      return acc
-    }, [])
-  }, [pairs])
+  // const inputTokenList = useMemo(() => {
+  //   if (pairs.length === 0) return []
+  //   return pairs.reduce((acc, [token0, token1]) => {
+  //     acc.push(token0)
+  //     acc.push(token1)
+  //     return acc
+  //   }, [])
+  // }, [pairs])
 
-  const outputTokenList = useMemo(() => {
-    if (pairs.length === 0) return []
-    if (inputCurrency) {
+  // const outputTokenList = useMemo(() => {
+  //   if (pairs.length === 0) return []
+  //   if (inputCurrency) {
 
-      return pairs.reduce((acc, [token0, token1]) => {
-        if (inputCurrency.wrapped.address === token0) acc.push(token1)
-        if (inputCurrency.wrapped.address === token1) acc.push(token0)
-        return acc
-      }, [])
-    }
-    return pairs.reduce((acc, [token0, token1]) => {
-      acc.push(token0)
-      acc.push(token1)
-      return acc
-    }, [])
-  }, [inputCurrency, pairs])
+  //     return pairs.reduce((acc, [token0, token1]) => {
+  //       if (inputCurrency.wrapped.address === token0) acc.push(token1)
+  //       if (inputCurrency.wrapped.address === token1) acc.push(token0)
+  //       return acc
+  //     }, [])
+  //   }
+  //   return pairs.reduce((acc, [token0, token1]) => {
+  //     acc.push(token0)
+  //     acc.push(token1)
+  //     return acc
+  //   }, [])
+  // }, [inputCurrency, pairs])
 
   return (
       <SwapLayoutCard>
@@ -95,6 +80,7 @@ const LimitOrder = () => {
         </div>
         <div className="ml-0 mb-4 sm:ml-20">
         <GelatoLimitOrderPanel />
+        <LimitOrderPanel />
         <GelatoLimitOrdersHistoryPanel />
         {/* <div className */}
           {/* <SwapAssetPanel

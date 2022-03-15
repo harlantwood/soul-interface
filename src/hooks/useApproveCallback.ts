@@ -10,6 +10,7 @@ import { calculateGasMargin } from '../functions/trade'
 import { useActiveWeb3React } from 'services/web3'
 import { useTokenAllowance } from './useTokenAllowance'
 import { useTokenContract } from './useContract'
+import useSoulSwapLimitOrdersLib from './limitOrders/useSoulSwapLimitOrdersLib'
 
 export enum ApprovalState {
   UNKNOWN = 'UNKNOWN',
@@ -118,4 +119,16 @@ export function useApproveCallbackFromTrade(
         : undefined
       : undefined
   )
+}
+
+// wraps useApproveCallback in the context of a swap
+export function useApproveCallbackFromInputCurrencyAmount(
+  currencyAmountIn: CurrencyAmount<Currency> | undefined
+) {
+  const gelatoLibrary = useSoulSwapLimitOrdersLib();
+
+  return useApproveCallback(
+    currencyAmountIn,
+    gelatoLibrary?.erc20OrderRouter.address ?? undefined
+  );
 }

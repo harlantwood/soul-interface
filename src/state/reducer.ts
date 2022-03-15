@@ -21,9 +21,11 @@ import multicall from './multicall/reducer'
 import slippage from './slippage/slippageSlice'
 import swap from './swap/reducer'
 import transactions from './transactions/reducer'
+import limitTransactions from './limit-transactions/reducer'
 import user from './user/reducer'
 import zap from './zap/reducer'
 import { gelatoReducers } from 'soulswap-limit-orders-react'
+import order from './order/reducer'
 
 const reducer = combineReducers({
   application,
@@ -35,6 +37,8 @@ const reducer = combineReducers({
   multicall,
   lists,
   limitOrder,
+  order,
+  limitTransactions,
   create,
   // inari,
   mines,

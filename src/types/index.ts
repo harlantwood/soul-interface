@@ -2,6 +2,12 @@ import { Currency, PoolState, TradeType, TridentTrade, Trade as LegacyTrade  } f
 
 export * from './AddressMap'
 
+export enum Field {
+  INPUT = "INPUT",
+  OUTPUT = "OUTPUT",
+  PRICE = "PRICE",
+}
+
 export type TradeUnion =
   | TridentTrade<Currency, Currency, TradeType.EXACT_INPUT | TradeType.EXACT_OUTPUT>
   | LegacyTrade<Currency, Currency, TradeType.EXACT_INPUT | TradeType.EXACT_OUTPUT>
@@ -31,3 +37,5 @@ export type PoolWithState<T> =
   | PoolWithStateLoading
   | PoolWithStateNotExists
   | PoolWithStateInvalid
+
+export declare type Handler = "soulswap" | "soulswap_stoplimit" | "uniswap" | "uniswap_stoplimit" | "quickswap" | "quickswap_stoplimit" | "spiritswap" | "spiritswap_stoplimit" | "spookyswap" | "spookyswap_stoplimit" | "bombswap" | "polydex" | "cafeswap" | "pancakeswap" | "pancakeswap_stoplimit" | "traderjoe" | "traderjoe_stoplimit" | "defyswap" | "pangolin" | "pangolin_stoplimit";

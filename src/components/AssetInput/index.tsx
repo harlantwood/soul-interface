@@ -2,7 +2,7 @@ import { ExclamationCircleIcon } from '@heroicons/react/outline'
 import { ChevronDownIcon } from '@heroicons/react/solid'
 import { t } from '@lingui/macro'
 import { useLingui } from '@lingui/react'
-import { Currency, CurrencyAmount, SOUL_ADDRESS, Token } from 'sdk'
+import { Currency, CurrencyAmount, Percent, Price, SOUL_ADDRESS, Token } from 'sdk'
 import selectCoinAnimation from 'animation/select-coin.json'
 import { Button } from 'components/Button'
 import Chip from 'components/Chip'
@@ -27,6 +27,14 @@ import { useCurrency } from 'hooks/Tokens'
 import { formatCurrency } from 'modals/TokensStatsModal'
 import { useBinancePrice, useFantomPrice, useTokenPrice, useWrappedBtcPrice } from 'hooks/getPrices'
 import { usePairPrice } from 'hooks/usePairData'
+import { RowBetween, RowFixed } from 'components/Row'
+import { TYPE } from 'theme'
+import { RatePercentage } from 'components/LimitInputPanel/RatePercentage'
+import { formatTokenAmount } from 'utils/tools/formatTokenAmount'
+// import styled from "styled-components/macro";
+import { darken } from 'polished'
+import { useCurrencyBalance } from 'hooks/limitOrders/Balances'
+import { Rate } from 'state/order/actions'
 
 interface AssetInputProps {
   value?: string
@@ -48,6 +56,20 @@ interface AssetInputProps {
   size?: 'sm' | 'md'
   balance?: CurrencyAmount<Currency>
   showMax?: boolean
+  otherCurrency?: Currency | null;
+  fiatValue?: CurrencyAmount<Token> | null;
+  rateType?: Rate;
+  priceImpact?: Percent;
+  showRate?: boolean;
+  isInvertedRate?: boolean;
+  realExecutionPrice?: Price<Currency, Currency> | undefined;
+  realExecutionPriceAsString?: string | undefined;
+  gasPrice?: number
+  hideBalance?: boolean;
+  showCurrencySelector?: boolean;
+  hideInput?: boolean;
+  showCommonBases?: boolean;
+  customBalanceText?: string;
 }
 
 type AssetInput<P> = FC<P> & {
@@ -175,6 +197,16 @@ interface AssetInputPanelProps extends AssetInputProps {
 const AssetInputPanel = ({
   value,
   currency,
+  otherCurrency,
+  showCommonBases,
+  customBalanceText,
+  showRate,
+  realExecutionPrice,
+  realExecutionPriceAsString,
+  gasPrice,
+  hideBalance,
+  showCurrencySelector,
+  hideInput,
   currencyAddress,
   token0,
   token1,
@@ -185,7 +217,11 @@ const AssetInputPanel = ({
   footer,
   disabled,
   showMax = true,
+  fiatValue,
+  rateType,
+  priceImpact,
   currencies = [],
+  isInvertedRate = false,
   headerRight,
   currencyLogo,
   size,
@@ -198,14 +234,30 @@ const AssetInputPanel = ({
   let tokenB = useCurrency(token1)
 
   // console.log('token0: ', token0)
-  
+  const rate = useMemo(
+    () =>
+      currency && otherCurrency && value
+        ? `1 ${
+            isInvertedRate ? otherCurrency?.symbol : currency?.symbol
+          } = ${value} ${
+            isInvertedRate ? currency?.symbol : otherCurrency?.symbol
+          }`
+        : undefined,
+    [currency, isInvertedRate, otherCurrency, value]
+  );
   const pairPrice = usePairPrice(currencyAddress)
   const usdcValue = useUSDCValue(tryParseAmount(Number(value) === 0 ? '1' : value, currency))
   const tokenPrice = useTokenPrice(token0)
   const ftmPrice = useFantomPrice()
   const btcPrice = useWrappedBtcPrice()
   const bnbPrice = useBinancePrice()
-  // const ftmPrice = useBinancePrice()
+
+  const { account } = useActiveWeb3React()
+
+  const selectedCurrencyBalance = useCurrencyBalance(
+    account ?? undefined,
+    currency ?? undefined
+  );
  
   // const usdValue = usePrice(currency.toString())
   const span = useRef<HTMLSpanElement | null>(null)
@@ -295,6 +347,47 @@ const AssetInputPanel = ({
               formatCurrency(pairPrice * Number(value), 2))            
             }
           </Typography>
+          {!hideInput && !hideBalance && !showRate && (
+          
+            <RowBetween>
+              {
+              // account ? (
+              true ? (
+                <RowFixed style={{ height: "17px" }}>
+                  <TYPE.Body
+                    onClick={onMax}
+                    color={"#C3C5CB"}
+                    fontWeight={400}
+                    fontSize={14}
+                    style={{ display: "inline", cursor: "pointer" }}
+                  >
+                    {!hideBalance && !!currency && selectedCurrencyBalance
+                      ? (customBalanceText ?? "Balance: ") +
+                        formatTokenAmount(selectedCurrencyBalance, 4) +
+                        " " +
+                        currency.symbol
+                      : "-"}
+                  </TYPE.Body>
+                </RowFixed>
+              ) : (
+                "-"
+              )}
+            {!rateType ? (
+                <FiatValue fiatValue={fiatValue} 
+                // priceImpact={priceImpact} 
+                />
+            ) : (
+                // Only show on output panel
+                <RatePercentage
+                  priceImpact={priceImpact}
+                  rateType={rateType}
+                  inputCurrency={otherCurrency}
+                  outputCurrency={currency}
+                />
+              )}
+            </RowBetween>
+
+          )}
         </div>
         {error ? (
           <ExclamationCircleIcon className="w-8 h-8 mr-2 text-red" />
