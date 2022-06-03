@@ -1,7 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, VFC } from "react";
 import Row from "../../components/Row";
 import { Button as ButtonComponent } from 'components/Button'
 import Column, { AutoColumn } from "../../components/Column"
+import { BigNumber as EthersBigNumber, ethers } from "ethers";
+
 import { FANTOM, AVALANCHE, BINANCE, Chain, CHAINS, ETHEREUM, MOONRIVER, POLYGON, Token } from "features/crosschain/helpers/Chains";
 
 import styled from "styled-components";
@@ -25,6 +27,9 @@ import {
   unitToWei,
   weiToUnit,
 } from "../../utils/conversion";
+import ierc20Abi from "constants/abis/soulswap/ERCs/IERC20.json";
+import erc20Abi from "constants/abis/erc20.json";
+
 import { formatAddress, loadERC20Contract } from "../../utils/wallet";
 import useBridge from "../../hooks/useBridge";
 import useSendTransaction from "../../hooks/useSendTransaction";
@@ -36,15 +41,34 @@ import FadeInOut from "../../components/AnimationFade";
 import { ContentBox, OverlayButton, Typo1, Typo2, Typo3 } from "components/index";
 import InputError from "components/Input/Error";
 import { useActiveWeb3React } from "services/web3";
-import { ArrowDownIcon } from "@heroicons/react/solid";
+import { ArrowDownIcon, StarIcon } from "@heroicons/react/solid";
 import Image from 'next/image'
 import Typography from "components/Typography";
 import HeaderNew from "features/trade/HeaderNew";
 import Container from "components/Container";
-import NavLink from "components/NavLink";
+// import NavLink from "components/NavLink";
 import { formatNumber } from "functions/format";
-import SDK, { BLOCKCHAIN_NAME, CrossChainTrade, InstantTrade, InsufficientLiquidityError } from "rubik-sdk";
-import { sleep } from "pages/multichain";
+import SDK, { BLOCKCHAIN_NAME, Configuration, CrossChainTrade, InstantTrade, InsufficientFundsError, InsufficientLiquidityError, WalletProvider } from "rubik-sdk";
+import Exchange, { sleep } from "pages/multichain";
+// import Exchange, { sleep } from "pages/multichain";
+import { TokenSelect } from "./components/TokenSelect";
+import { useUserInfo } from "hooks/useAPI";
+import { Spinner } from "components/Spinner";
+import { SwapButton } from "features/crosschain/Styles";
+import { CheckCircle } from "react-feather";
+// import { BridgeTokenList, BridgeTokenSelectModal } from "pages/bridge";
+
+const RUBIC_CHAIN_BY_ID = new Map([
+  [FANTOM.chainId, BLOCKCHAIN_NAME.FANTOM],
+  [MOONRIVER.chainId, BLOCKCHAIN_NAME.MOONRIVER],
+  [POLYGON.chainId, BLOCKCHAIN_NAME.POLYGON],
+  [AVALANCHE.chainId, BLOCKCHAIN_NAME.AVALANCHE],
+  [ETHEREUM.chainId, BLOCKCHAIN_NAME.ETHEREUM],
+  [BINANCE.chainId, BLOCKCHAIN_NAME.BINANCE_SMART_CHAIN],
+]);
+
+const NATIVE_ADDRESS = "0x0000000000000000000000000000000000000000"
+
 
 const ChainSelect: React.FC<any> = ({ selectChain, chains }) => {
   return (
@@ -241,8 +265,10 @@ const handleSetToChain = (chainId: number) => {
     setFromChain(toChainOld);
     setToChain(fromChainOld);
   };
+  
   return (
     <Column>
+    
   {/* // TODO: RE-ENABLE // */}
       <div className="flex">
         <ChainSelector
@@ -293,14 +319,41 @@ const handleSetToChain = (chainId: number) => {
           (chainId) => chainId !== toChain
         )}
       />
+      
       </div>
     </Column>
   );
 };
 
 const TokenSelector: React.FC<any> = ({ tokens, selected, selectToken }) => {
+
+    const lastExchange = JSON.parse(localStorage.getItem("exchange"));
+    if (!lastExchange) {
+      return undefined;
+    }
+
+  const [from, setFrom] = useState<Token>(lastExchange.from?.token);
+  const [to, setTo] = useState<Token>(lastExchange.to.token);
+  const [fromChain, setFromChain] = useState<Chain>(lastExchange.from?.chain);
+  const [toChain, setToChain] = useState<Chain>(lastExchange.to.chain);
+  const { setToChain: connectToChain } = useMultiChain();
+  const [showSelectTo, setShowSelectTo] = useState(false);
+  const [showSelectFrom, setShowSelectFrom] = useState(false);
+
   const [onPresentSelectTokenModal] = useModal(
-    <BridgeTokenSelectModal tokens={tokens} selectToken={selectToken} />,
+    // <BridgeTokenSelectModal tokens={tokens} selectToken={selectToken} />,
+    <TokenSelect
+        show={showSelectTo}
+        chain={toChain}
+        onClose={t => {
+          setShowSelectTo(false);
+          if (!t) {
+            return;
+          }
+          setTo(t.token);
+          setToChain(t.chain);
+        }}
+      />,
     "bridge-token-select-modal"
   );
 
@@ -343,293 +396,49 @@ const TokenSelector: React.FC<any> = ({ tokens, selected, selectToken }) => {
   );
 };
 
-const BridgeTokenSelectModal: React.FC<any> = ({
-  tokens,
-  selectToken,
-  onDismiss,
-}) => {
-  return (
-    <Modal
-      style={{ padding: "2px 0.5px", maxHeight: "80vh" }}
-      onDismiss={onDismiss}
-    >
-      {/* <ModalTitle text="Select Token" /> */}
-      <div />
-      <ModalContent style={{ padding: "8px 0px" }}>
-        <Column>
-          {/* <Row
-            style={{
-              justifyContent: "space-between",
-              padding: "0 1rem .5rem 1rem",
-            }}
-          >
-            <Typo3
-              style={{
-                textAlign: "center",
-                width: "8rem",
-                color: "white",
-              }}
-            >
-              TOKEN
-            </Typo3>
-            <Typo3
-              style={{
-                textAlign: "center",
-                width: "8rem",
-                color: "white",
-              }}
-            >
-              BALANCE
-            </Typo3>
-          </Row> */}
-          <Scrollbar style={{ height: "60vh" }}>
-            <Column>
-              {tokens &&
-                tokens.map((token: any) => {
-                  return (
-                    <StyledOverlayButton
-                      key={"token-select-" + token.name}
-                      onClick={() => {
-                        selectToken(token);
-                        onDismiss();
-                      }}
-                      style={{ padding: ".5rem" }}
-                    >
-                      <Row
-                        style={{
-                          width: "100%",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Row style={{ gap: "1rem", alignItems: "center" }}>
-                         <Image
-                            alt="token logo"
-                            height="30px"
-                            width="30px"
-                            src={token.logoUrl}
-                          />
-                          <Typo2 style={{ fontWeight: "bold" }}>
-                            {token.symbol}
-                          </Typo2>
-                        </Row>
-                        <BalancePromiseToUnit
-                          promise={token.balance}
-                          decimals={token.Decimals}
-                        />
-                      </Row>
-                    </StyledOverlayButton>
-                  );
-                })}
-            </Column>
-          </Scrollbar>
-        </Column>
-      </ModalContent>
-    </Modal>
-  );
-};
-
-const BalancePromiseToUnit: React.FC<any> = ({ promise, decimals }) => {
-  const [value, setValue] = useState(null);
-  useEffect(() => {
-    promise.then((resolvedValue: any) => {
-      if (resolvedValue) {
-        setValue(resolvedValue);
-      }
-    });
-  }, [promise]);
-
-  return (
-    <Row style={{ alignItems: "center" }}>
-      <Typo2 style={{ width: "12rem", textAlign: "end", paddingRight: "0rem" }}>
-        {value ? weiToUnit(value, decimals) : "..."}
-      </Typo2>
-    </Row>
-  );
-};
-
-const BridgeTokenList: React.FC<any> = ({
-  tokenList,
-  fromChain,
-  toChain,
-  setSelectedToken,
-  amount,
-  setAmount,
-  inputError,
-  isBridgeTxCompleted,
-}) => {
-  const { account } = useActiveWeb3React()
-  const [token, setToken] = useState(null);
-  const [fromTokenBalance, setFromTokenBalance] = useState(null);
-  const [toTokenBalance, setToTokenBalance] = useState(null);
-
-  const handleSetToken = (value: any) => {
-    setFromTokenBalance(null);
-    setToTokenBalance(null);
-    setToken(value);
-  };
-
-  useEffect(() => {
-    if (tokenList && tokenList.length) {
-      setFromTokenBalance(null);
-      setToTokenBalance(null);
-      return setToken(tokenList[0]);
-    }
-  }, [tokenList]);
-
-  useEffect(() => {
-    setSelectedToken(token);
-    setAmount("");
-
-    if (token) {
-      Promise.all([token.balance, token.balanceTo]).then(
-        ([fromBalance, toBalance]) => {
-          setFromTokenBalance(fromBalance || BigNumber.from(0));
-          setToTokenBalance(toBalance || BigNumber.from(0));
-          setSelectedToken({
-            ...token,
-            // balance: fromBalance || BigNumber.from(0),
-            // balanceTo: toBalance || BigNumber.from(0),
-          });
-        }
-      );
-      return;
-    }
-  }, [token, account, isBridgeTxCompleted]);
-
-  return (
-    <div className="grid justify-center">
-      <Row style={{ gap: "1rem" }}>
-        <div className="my-1" />
-        <Row style={{ flex: 2, paddingLeft: "1rem" }}>
-          {inputError ? (
-            <InputError error={inputError} fontSize="14px" />
-          ) : (
-            <div />
-          )}
-        </Row>
-      </Row>
-      <div />
-      <div className="hidden sm:flex">
-      <div className="grid grid-cols-2 gap-1 mt-2 mb-2 rounded p-0 border border-dark-1000 hover:border-dark-600 w-full">
-        <TokenSelector
-          tokens={tokenList}
-          selected={token}
-          selectToken={handleSetToken}
-        />
-        <div className="flex">
-          <InputCurrencyBox
-            disabled={!token}
-            value={amount}
-            setValue={setAmount}
-            max={
-              token && fromTokenBalance
-                ? weiToUnit(fromTokenBalance, token?.Decimals)
-                : 0
-            }
-            variant="new"
-          />
-        </div>
-      </div>
-      </div>
-      <div className="grid grid-cols-2 gap-1 mt-2 mb-2 rounded p-0 border border-dark-1000 hover:border-dark-600 w-full">
-        <TokenSelector
-          tokens={tokenList}
-          selected={token}
-          selectToken={handleSetToken}
-        />
-        <div className="flex">
-          {/* <InputCurrencyBox
-            disabled={!token}
-            value={amount}
-            setValue={setAmount}
-            max={
-              token && fromTokenBalance
-                ? weiToUnit(fromTokenBalance, token?.Decimals)
-                : 0
-            }
-            variant="new"
-          /> */}
-        </div>
-      </div>
-      <div className="flex sm:hidden">
-      <div className="grid grid-cols gap-1 mt-2 mb-2 rounded p-0 border border-dark-1000 hover:border-dark-600 w-full">
-        <TokenSelector
-          tokens={tokenList}
-          selected={token}
-          selectToken={handleSetToken}
-        />
-        <div style={{ flex: 2 }} className="mt-2">
-          <InputCurrencyBox
-            disabled={!token}
-            value={amount}
-            setValue={setAmount}
-            max={
-              token && fromTokenBalance
-                ? weiToUnit(fromTokenBalance, token?.Decimals)
-                : 0
-            }
-            variant="new"
-          />
-        </div>
-      </div>
-      </div>
-      
-      <div className="my-2" />
-
-      <div className="flex justify-between">
-          <Typography className="text-white" fontFamily={'medium'}>
-          Balance on {chainToNetworkInfoMap[fromChain]?.name}
-          </Typography>
-          <Typography className="text-white" weight={600} fontFamily={'semi-bold'}>
-          {token && fromTokenBalance
-            ? ` ${weiToUnit(fromTokenBalance, token.Decimals) + ' ' + token.symbol}`
-            : "-"}
-          </Typography>
-      </div>
-      <div className="flex justify-between">
-          <Typography className="text-white" fontFamily={'medium'}>
-          Balance on {chainToNetworkInfoMap[toChain]?.name}
-          </Typography>
-          <Typography className="text-white" weight={600} fontFamily={'semi-bold'}>
-          {token && toTokenBalance
-            ? ` ${weiToUnit(toTokenBalance, token.DecimalsTo) + ' ' + token.symbol}`
-            : "-"}
-          </Typography>
-      </div>
-     </div>
-  );
-};
-
-
-interface Exchange {
+interface CrossChain {
   from: { chain: Chain; token: Token };
   to: { chain: Chain; token: Token };
 }
-function getLastExchange(): Exchange {
+function getLastExchange(): CrossChain {
   const lastExchange = JSON.parse(localStorage.getItem("exchange"));
   if (!lastExchange) {
     return undefined;
   }
 
-  const fromChain = CHAINS.find(c => c.chainId === lastExchange.from.chain);
-  const fromToken = fromChain.tokens.find(t => t.id === lastExchange.from.token);
+  const fromChain = CHAINS.find(c => c.chainId === lastExchange.from?.chain);
+  const fromToken = fromChain?.tokens.find(t => t.id === lastExchange?.from?.token);
   const toChain = CHAINS.find(c => c.chainId === lastExchange.to.chain);
-  const toToken = toChain.tokens.find(t => t.id === lastExchange.to.token);
+  const toToken = toChain?.tokens.find(t => t.id === lastExchange?.to.token);
   return { from: { chain: fromChain, token: fromToken }, to: { chain: toChain, token: toToken } };
 }
 
-function setLastExchange(from: { chain: Chain; token: Token }, to: { chain: Chain; token: Token }) {
-  localStorage.setItem(
-    "exchange",
-    JSON.stringify({
-      from: { chain: from.chain.chainId, token: from.token.id },
-      to: { chain: to.chain.chainId, token: to.token?.id },
-    }),
-  );
-}
+const rubicConfiguration: Configuration = {
+  rpcProviders: {
+    [BLOCKCHAIN_NAME.BINANCE_SMART_CHAIN]: {
+      mainRpc: BINANCE.rpc[0],
+    },
+    [BLOCKCHAIN_NAME.MOONRIVER]: {
+      mainRpc: MOONRIVER.rpc[0],
+    },
+    [BLOCKCHAIN_NAME.POLYGON]: {
+      mainRpc: POLYGON.rpc[0],
+    },
+    [BLOCKCHAIN_NAME.AVALANCHE]: {
+      mainRpc: AVALANCHE.rpc[0],
+    },
+    [BLOCKCHAIN_NAME.ETHEREUM]: {
+      mainRpc: ETHEREUM.rpc[0],
+    },
+    [BLOCKCHAIN_NAME.FANTOM]: {
+      mainRpc: FANTOM.rpc[0],
+    },
+  },
+};
 
 const FTM = FANTOM.tokens.find(t => t.id === "fantom");
-const LUX = FANTOM.tokens.find(t => t.id === "luxor");
+const DAI = FANTOM.tokens.find(t => t.id === "dai");
+const DEFAULT_LOGO = 'https://raw.githubusercontent.com/soulswapfinance/assets/prod/blockchains/fantom/assets/0xe2fb177009FF39F52C0134E8007FA0e4BaAcBd07/logo.png'
 
 const CrossChain: React.FC<any> = () => {
   const { chainId, account, connector, deactivate, library } = useActiveWeb3React()
@@ -639,27 +448,36 @@ const CrossChain: React.FC<any> = () => {
   // const { transaction } = useTransaction();
   const { approve, getAllowance } = useFantomERC20();
   const [tokenList, setTokenList] = useState(null);
+  const [isShowingChainSelect, showChainSelect] = useState(false);
+  const [isShowingTokenSelect, showTokenSelect] = useState(false);
 
   const lastExchange = useMemo(() => {
-    return getLastExchange() ?? { from: { chain: FANTOM, token: FTM }, to: { chain: FANTOM, token: LUX } };
+    return getLastExchange() ?? { from: { chain: FANTOM, token: FTM }, to: { chain: FANTOM, token: DAI } };
   }, []);
   
-  const [fromChain, setFromChain] = useState<Chain>(lastExchange.from.chain);
+  const [fromChain, setFromChain] = useState<Chain>(lastExchange.from?.chain);
   const [toChain, setToChain] = useState<Chain>(lastExchange.to.chain);
 
   const [selectedToken, setSelectedToken] = useState(null);
   const [isApproved, setIsApproved] = useState(true);
   const [amount, setAmount] = useState("");
   
-  const [from, setFrom] = useState<Token>(lastExchange.from.token);
+  const [from, setFrom] = useState<Token>(lastExchange.from?.token);
   const [to, setTo] = useState<Token>(lastExchange.to.token);
 
-  const [fromUsd, setFromUsd] = useState<string>();
-  const [toUsd, setToUsd] = useState<string>();
   const [trade, setTrade] = useState<InstantTrade | CrossChainTrade | undefined>(undefined);
-  const [rubic, setRubic] = useState<SDK>(null);
   const [canBuy, setCanBuy] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [configuration, setConfiguration] = useState(rubicConfiguration);
+  const [fromUsd, setFromUsd] = useState<string>();
+  const [toUsd, setToUsd] = useState<string>();
+
+  const [rubic, setRubic] = useState<SDK>(null);
+  useEffect(() => {
+    SDK.createSDK(configuration).then(setRubic);
+  }, []);
+
+
 
   const [inputError, setInputError] = useState(null);
   const [bridgeTxHash, setBridgeTxHash] = useState(
@@ -667,18 +485,7 @@ const CrossChain: React.FC<any> = () => {
   );
   const [bridgeStatus, setBridgeStatus] = useState(0)
 
-  const NATIVE_ADDRESS = "0x0000000000000000000000000000000000000000"
 
-  const RUBIC_CHAIN_BY_ID = new Map([
-    [FANTOM.chainId, BLOCKCHAIN_NAME.FANTOM],
-    [MOONRIVER.chainId, BLOCKCHAIN_NAME.MOONRIVER],
-    [POLYGON.chainId, BLOCKCHAIN_NAME.POLYGON],
-    [AVALANCHE.chainId, BLOCKCHAIN_NAME.AVALANCHE],
-    [ETHEREUM.chainId, BLOCKCHAIN_NAME.ETHEREUM],
-    [BINANCE.chainId, BLOCKCHAIN_NAME.BINANCE_SMART_CHAIN],
-  ]);
-
-  
   const {
     ContractAddress,
     symbol,
@@ -730,12 +537,12 @@ const CrossChain: React.FC<any> = () => {
 
       try {
         const tradeRequest =
-          fromChain.chainId === toChain.chainId
+          fromChain?.chainId === toChain?.chainId
             ? rubic.instantTrades
                 .calculateTrade(
                   {
-                    blockchain: RUBIC_CHAIN_BY_ID.get(fromChain.chainId),
-                    address: from.isNative ? NATIVE_ADDRESS : from.address,
+                    blockchain: RUBIC_CHAIN_BY_ID.get(fromChain?.chainId),
+                    address: from?.isNative ? NATIVE_ADDRESS : from?.address,
                   },
                   amount,
                   to.isNative ? NATIVE_ADDRESS : to.address,
@@ -743,32 +550,32 @@ const CrossChain: React.FC<any> = () => {
                 .then((trades: InstantTrade[]): InstantTrade => trades[0])
             : rubic.crossChain.calculateTrade(
                 {
-                  address: from.isNative ? NATIVE_ADDRESS : from.address,
-                  blockchain: RUBIC_CHAIN_BY_ID.get(fromChain.chainId),
+                  address: from?.isNative ? NATIVE_ADDRESS : from?.address,
+                  blockchain: RUBIC_CHAIN_BY_ID.get(fromChain?.chainId),
                 },
                 amount,
                 {
                   address: to.isNative ? NATIVE_ADDRESS : to.address,
-                  blockchain: RUBIC_CHAIN_BY_ID.get(toChain.chainId),
+                  blockchain: RUBIC_CHAIN_BY_ID.get(toChain?.chainId),
                 },
               );
 
         const newTrade = await tradeRequest;
         const [newFromUsd, newToUsd] = await Promise.all([
           // Get the USD value of what's being _sold_.
-          from.isNative
-            ? rubic.cryptoPriceApi.getNativeCoinPrice(RUBIC_CHAIN_BY_ID.get(fromChain.chainId))
+          from?.isNative
+            ? rubic.cryptoPriceApi.getNativeCoinPrice(RUBIC_CHAIN_BY_ID.get(fromChain?.chainId))
             : rubic.cryptoPriceApi.getErc20TokenPrice({
-                address: from.address,
-                blockchain: RUBIC_CHAIN_BY_ID.get(fromChain.chainId),
+                address: from?.address,
+                blockchain: RUBIC_CHAIN_BY_ID.get(fromChain?.chainId),
               }),
 
           // Get the USD value of what's being _bought_.
           to.isNative
-            ? rubic.cryptoPriceApi.getNativeCoinPrice(RUBIC_CHAIN_BY_ID.get(toChain.chainId))
+            ? rubic.cryptoPriceApi.getNativeCoinPrice(RUBIC_CHAIN_BY_ID.get(toChain?.chainId))
             : rubic.cryptoPriceApi.getErc20TokenPrice({
                 address: to.address,
-                blockchain: RUBIC_CHAIN_BY_ID.get(toChain.chainId),
+                blockchain: RUBIC_CHAIN_BY_ID.get(toChain?.chainId),
               }),
         ]);
         if (disposed) {
@@ -777,7 +584,7 @@ const CrossChain: React.FC<any> = () => {
 
         setTrade(newTrade);
         setLoading(false);
-        setFromUsd(formatNumber(newFromUsd.multipliedBy(newTrade.from.tokenAmount)));
+        setFromUsd(formatNumber(newFromUsd.multipliedBy(newTrade.from?.tokenAmount)));
         setToUsd(formatNumber(newToUsd.multipliedBy(newTrade.to.tokenAmount)));
       } catch (e) {
         if (disposed) {
@@ -796,7 +603,7 @@ const CrossChain: React.FC<any> = () => {
     setToUsd(undefined);
     setCanBuy(true);
 
-    const isTradingSameToken = fromChain.chainId === toChain.chainId && from?.id === to?.id;
+    const isTradingSameToken = fromChain?.chainId === toChain?.chainId && from?.id === to?.id;
     if (amount && parseFloat(amount) > 0 && !isTradingSameToken) {
       setLoading(true);
       run();
@@ -812,12 +619,7 @@ const CrossChain: React.FC<any> = () => {
     validateAmount(amount);
   }, [selectedToken]);
 
-    // TODO: FIX //
-  const isBridgeTxPending = false
-  //  transaction[bridgeTxHash] && transaction[bridgeTxHash].status === "pending";
-  const isBridgeTxCompleted = false
-    // transaction[bridgeTxHash] &&
-    // transaction[bridgeTxHash].status === "completed";
+  const isTxPending = false
 
   const {
     sendTx: handleApproveToken,
@@ -826,6 +628,176 @@ const CrossChain: React.FC<any> = () => {
   } = useSendTransaction(() =>
     approve(selectedToken.ContractAddress, selectedToken.router)
   );
+
+  interface TradeDetailProps {
+    trade?: InstantTrade | CrossChainTrade;
+  }
+
+  function isCrossChainTrade(trade: InstantTrade | CrossChainTrade): trade is CrossChainTrade {
+    return "transitFeeToken" in trade;
+  }
+
+  const TradeDetail: VFC<TradeDetailProps> = ({ trade }) => {
+    let min: string;
+    if (trade) {
+      if (isCrossChainTrade(trade)) {
+        min = `${formatNumber(trade.toTokenAmountMin)} ${trade.to.symbol}`;
+      } else {
+        min = `${formatNumber(trade.toTokenAmountMin.tokenAmount)} ${trade.to.symbol}`;
+      }
+    }
+  
+    return (
+      <div className="flex mt-[20px]">
+        <div className="flex text-align-right">
+          <div>Minimum Received:</div>
+          <div>{min || "—"}</div>
+        </div>
+        <div className="flex items-center">
+        <Exchange />
+        </div>
+      </div>
+    );
+  };
+
+  interface TokenSelectProps {
+    show: boolean;
+    chain: Chain;
+    onClose: (selection?: { token: Token; chain: Chain }) => void;
+  }
+
+  const TokenSelect: React.VFC<TokenSelectProps> = ({ show, onClose, chain }) => {
+    const [filter, setFilter] = useState("");
+    const [selectedChainId, setSelectedChainId] = useState(chain?.chainId);
+    const selectedChain = useMemo(() => CHAINS.find(c => c.chainId === selectedChainId), [selectedChainId, CHAINS]);
+    const input = useRef<HTMLInputElement>(null);
+    const tokensList = useRef<HTMLDivElement>(null);
+    const normalizedFilter = filter.trim().toLowerCase();
+    const filteredTokens = selectedChain?.tokens.filter(({ name, symbol, address }) => {
+      const isNameMatch = name.toLowerCase().includes(normalizedFilter);
+      const isSymbolMatch = symbol.toLowerCase().includes(normalizedFilter);
+      const isAddressMatch = address.startsWith(normalizedFilter) || address.startsWith("0x" + normalizedFilter);
+      return isNameMatch || isSymbolMatch || isAddressMatch;
+    });
+    const [isShowingChainSelect, showChainSelect] = useState(false);
+
+    useEffect(() => {
+      if (!show) {
+        return;
+      }
+  
+      input.current?.focus();
+  
+      const escape = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          onClose();
+        }
+      };
+      window.addEventListener("keydown", escape);
+      return () => {
+        window.removeEventListener("keydown", escape);
+      };
+    }, [show]);
+  
+    useEffect(() => {
+      if (!show) {
+        setTimeout(() => {
+          setFilter("");
+          setSelectedChainId(chain?.chainId || 250);
+          showChainSelect(false);
+          tokensList.current?.scrollTo({ top: 0 });
+        }, 100);
+      }
+    }, [show]);
+  
+    return (
+      // TokenSelectOverlay
+      <div className="fixed w-full h-full" style={{ opacity: show ? 1 : 0, pointerEvents: show ? "unset" : "none" }}>
+        {/* TokenSelectBackground */}
+        <div className="absolute w-full h-full bg-dark-900" onClick={() => onClose()} />
+        {/* TokenSelectModal */}
+        <div className="fixed h-[95px] border top-[50%] left-[50%] w-full max-h-[768px] max-w-[280px]" style={{ transform: `translate(-50%, calc(-50% + ${show ? 0 : 30}px))` }}>
+          {/* ChainSelect */}
+          <div
+            className="absolute w-full h-full bg-dark-800"
+            style={{
+              transform: isShowingChainSelect ? "translateX(0)" : "translateX(100%)",
+              pointerEvents: show && isShowingChainSelect ? "all" : "none",
+            }}
+          >
+            <div className="chains-title">Select Chain</div>
+            <div className="chains">
+              {CHAINS.map((chain, i) => (
+                <button
+                  key={chain.chainId}
+                  onClick={() => {
+                    setSelectedChainId(chain.chainId);
+                    tokensList.current?.scrollTo({ top: 0 });
+                    showChainSelect(false);
+                    setFilter("");
+                  }}
+                  className="chain"
+                  style={{ backgroundColor: chain.color }}
+                >
+                  <img src={chain.logo} width="24" height="24" />
+                  <div style={{ flexGrow: 1, textAlign: "left" }}>{chain.name}</div>
+                  {chain.chainId === selectedChainId && 
+                  <CheckCircle width="16" height="16" style={{ color: "white" }} />
+                  }
+                </button>
+              ))}
+            </div>
+            
+          </div>
+          <div
+            className="token-select"
+            style={{
+              transform: isShowingChainSelect ? "translateY(50px)" : "",
+              opacity: isShowingChainSelect ? 0 : 1,
+              pointerEvents: show ? "all" : "none",
+            }}
+          >
+            <div className="token-select-head">
+              <button
+                className="selected-chain"
+                style={{ backgroundColor: selectedChain?.color }}
+                onClick={() => showChainSelect(true)}
+              >
+                <img src={selectedChain?.logo} width="24" height="24" />
+                <div style={{ flexGrow: 1, textAlign: "left" }}>{selectedChain?.name}</div>
+                {/* TODO */}
+                {/* <ChevronIcon width="13" height="13" style={{ color: "white", marginTop: 2 }} /> */}
+              </button>
+  
+              <form
+                onSubmit={e => {
+                  e.preventDefault();
+                  onClose({ token: filteredTokens[0], chain: selectedChain });
+                }}
+              >
+                <input
+                  ref={input}
+                  className="tokens-filter"
+                  placeholder={`Search ${selectedChain?.name} tokens`}
+                  value={filter}
+                  onChange={e => setFilter(e.currentTarget.value)}
+                />
+              </form>
+            </div>
+            <div className="tokens-list" ref={tokensList}>
+              {filteredTokens?.map(token => (
+                <div key={token.address} onClick={() => onClose({ token, chain: selectedChain })}>
+                  <img src={token.logo} width="24" height="24" />
+                  <div className="token-name">{token.name}</div>
+                  {token.favorite && <StarIcon width="16" height="16" className="token-favorite" />}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const handleBridgeAction = async () => {
     const isStableType =
@@ -916,6 +888,9 @@ const CrossChain: React.FC<any> = () => {
     return () => clearInterval(interval);
   }, [bridgeTxHash]);
 
+  const [showSelectTo, setShowSelectTo] = useState(false);
+  const [showSelectFrom, setShowSelectFrom] = useState(false);
+
   return (
     <Container id="remove-liquidity-page" maxWidth="2xl" className="space-y-4">
       <DoubleGlowShadowV2>
@@ -967,6 +942,7 @@ const CrossChain: React.FC<any> = () => {
           </Column>
         </ContentBox>
       )}
+
       <Row style={{ width: "100%", justifyContent: "center" }}>
         <div className="flex -4 border border-dark-900 hover:border-dark-600 bg-dark-900 p-2 rounded w-full">
           <Column style={{ width: "100%" }}>
@@ -976,48 +952,73 @@ const CrossChain: React.FC<any> = () => {
                 setTokenList={setTokenList}
                 connectToChain={setFromChain}
                 bridgeToChain={setToChain} />
+              <TokenSelect
+        show={showSelectTo}
+        chain={toChain}
+        onClose={t => {
+          setShowSelectTo(false);
+          if (!t) {
+            return;
+          }
+          setTo(t.token);
+          setToChain(t.chain);
+        }}
+      />                            
+      <div />
               <div />
-              <div />
-              <BridgeTokenList
+
+      {/* <BridgeTokenList
                 tokenList={tokenList}
-                setSelectedToken={setSelectedToken}
+                setSelectedToken={setFrom}
                 fromChain={fromChain}
                 toChain={toChain}
                 amount={amount}
                 setAmount={handleSetAmount}
                 inputError={inputError}
-                isBridgeTxCompleted={isBridgeTxCompleted} />
+                isBridgeTxCompleted={false} /> */}
               <div />
+              
+              <TokenSelector
+                      show={showSelectTo}
+                      chain={toChain}
+                      onClose={t => {
+                        setShowSelectTo(false);
+                        if (!t) {
+                          return;
+                        }
+                        setTo(t.token);
+                        setToChain(t.chain);
+                      } } />
               <div />
               <div className="h-px my-6 bg-dark-1000"></div>
               <div className="flex flex-col bg-dark-1000 p-3 border border-1 border-dark-700 hover:border-dark-600 w-full space-y-1">
+
                 <div className="flex justify-between">
                   <Typography className="text-white" fontFamily={'medium'}>
-                    Bridgeable Range
+                    Minimum Receieved
                   </Typography>
                   <Typography className="text-white" weight={600} fontFamily={'semi-bold'}>
-                    {selectedToken
-                      ? `${formatSimpleValue(
-                        selectedToken.MinimumSwap
-                      )} - ${formatSimpleValue(
-                        selectedToken.MaximumSwap
-                      )} ${selectedToken.symbol}`
-                      : "-"}
+                     {/* {min || "—"} */}
                   </Typography>
                 </div>
 
                 <div className="flex justify-between">
                   <Typography className="text-white" fontFamily={'medium'}>
-                    Minimum Amount
+                    Price
                   </Typography>
                   <Typography className="text-white" weight={600} fontFamily={'semi-bold'}>
-                    {selectedToken
-                      ? `${formatSimpleValue(selectedToken.MinimumSwap)} ${selectedToken.symbol}`
-                      : "-"}
+                            {trade ? (
+                      <div>
+                        1 {trade.to.symbol} = {formatNumber(trade.to.price.dividedBy(trade.from?.price))}{" "}
+                        {trade.from?.symbol}
+                      </div>
+                    ) : (
+                      <div>&mdash;</div>
+                    )}
                   </Typography>
                 </div>
 
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <Typography className="text-white" fontFamily={'medium'}>
                     Maximum Amount
                   </Typography>
@@ -1040,7 +1041,7 @@ const CrossChain: React.FC<any> = () => {
                       )} ${selectedToken.symbol}`
                       : "-"}
                   </Typography>
-                </div>
+                </div> */}
 
                 <div className="flex justify-center">
                   <Typography className="text-white text-xs">
@@ -1062,8 +1063,8 @@ const CrossChain: React.FC<any> = () => {
                     : "Approve Token"}
               </ButtonComponent>
               
+                    
               {isApproved && (
-
                 <ButtonComponent
                   disabled={inputError ||
                     !amount ||
@@ -1072,13 +1073,14 @@ const CrossChain: React.FC<any> = () => {
                   color="purple"
                   onClick={handleBridgeAction}
                 >
-                  {isBridgeTxPending
+                  { isTxPending
                     ? "Broadcasting Transaction"
-                    : "Bridge Token"}
+                    : "Swap Tokens" }
                 </ButtonComponent>
               )}
-            
-              <div className="mt-4" />
+
+{/* <TradeDetail trade={trade} /> */}
+
             </>
           </Column>
         </div>
@@ -1103,6 +1105,127 @@ const CrossChain: React.FC<any> = () => {
 //     />
 //   );
 // };
+
+interface TradeDetailProps {
+  trade?: InstantTrade | CrossChainTrade;
+}
+function isCrossChainTrade(trade: InstantTrade | CrossChainTrade): trade is CrossChainTrade {
+  return "transitFeeToken" in trade;
+}
+
+const TradeDetail: VFC<TradeDetailProps> = ({ trade }) => {
+  let min: string;
+  if (trade) {
+    if (isCrossChainTrade(trade)) {
+      min = `${formatNumber(trade.toTokenAmountMin)} ${trade.to.symbol}`;
+    } else {
+      min = `${formatNumber(trade.toTokenAmountMin.tokenAmount)} ${trade.to.symbol}`;
+    }
+  }
+
+  return (
+    <div className="flex mt-[20px]">
+      <div className="flex text-align-right">
+        <div>Minimum Received:</div>
+        <div>{min || "—"}</div>
+      </div>
+      <div className="flex text-align-right">
+        <div>Price:</div>
+        <div>
+          {trade ? (
+            <div>
+              1 {trade.to.symbol} = {formatNumber(trade.to.price.dividedBy(trade.from?.price))}{" "}
+              {trade.from?.symbol}
+            </div>
+          ) : (
+            <div>&mdash;</div>
+          )}
+        </div>
+      </div>
+      {/* <div className="detail">
+        <div>Slippage:</div>
+        <div>{trade ? `${trade.slippageTolerance * 100}%` : "—"}</div>
+      </div> */}
+    </div>
+  );
+};
+
+interface ConfirmationProps {
+  show: "hide" | "show" | "poor";
+  onClose: (selection?: Token) => void;
+  from: Token;
+  to: Token;
+  fromUsd: string | undefined;
+  toUsd: string | undefined;
+  trade?: InstantTrade | CrossChainTrade;
+}
+const Confirmation: React.VFC<ConfirmationProps> = ({ show, onClose, from, to, fromUsd, toUsd, trade }) => {
+  const input = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (!show) {
+      return;
+    }
+
+    input.current?.focus();
+
+    const escape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", escape);
+    return () => {
+      window.removeEventListener("keydown", escape);
+    };
+  }, [show]);
+
+  return (
+    // <div
+    //   className="confirmation-overlay"
+    //   style={{ opacity: show !== "hide" ? 1 : 0, pointerEvents: show !== "hide" ? "unset" : "none" }}
+    // >
+    <div>
+      <div className="confirmation-background" onClick={() => onClose()} />
+      <div
+        className="confirmation"
+        style={{ transform: `translate(-50%, calc(-50% + ${show !== "hide" ? 0 : 30}px))` }}
+      >
+        <div className="transaction">
+          <div className="transaction-side">
+            <div className="transaction-token">
+              <img src={from?.logo} width="16" height="16" />
+              {from?.symbol}
+              <span style={{ flexGrow: 1 }} />
+              <span className="usd">${fromUsd ?? "0"}</span>
+            </div>
+            <div className="transaction-amount" style={{ color: show === "poor" ? "#e80625" : undefined }}>
+              {trade ? formatNumber(trade.from?.tokenAmount) : "n/a"}
+            </div>
+          </div>
+          <div className="transaction-direction">
+            <ArrowDownIcon width="42" height="42" />
+          </div>
+          <div className="transaction-side">
+            <div className="transaction-token">
+              <img src={ to?.logo || DEFAULT_LOGO } width="16" height="16" />
+              { to?.symbol || 'SOUL' }
+              <span style={{ flexGrow: 1 }} />
+              <span className="usd">${toUsd ?? "0"}</span>
+            </div>
+            <div className="transaction-amount">{trade ? formatNumber(trade.to.tokenAmount) : "n/a"}</div>
+          </div>
+        </div>
+        {/* TODO: fix below */}
+        {show === "poor" && <div className="poor-prompt">Your wallet doesn't have enough {from?.symbol || 'SOUL'}</div>}
+        {show === "show" && (
+          <div className="confirmation-prompt">
+            Confirm this transaction in {window.ethereum.isMetaMask ? "MetaMask" : "your wallet"}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const StyledOverlayButton = styled(OverlayButton)`
   :hover {

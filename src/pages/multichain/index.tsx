@@ -11,7 +11,6 @@ import SDK, {
   InsufficientLiquidityError,
 } from "rubik-sdk";
 // import { sleep } from "src/helpers/Sleep";
-// import { ReactComponent as ChevronIcon } from "src/assets/icons/chevron.svg";
 // import { ReactComponent as ArrowDownIcon } from "src/assets/icons/arrow-down.svg";
 // import { ReactComponent as Spinner } from "src/assets/icons/spinner.svg";
 // import { ReactComponent as StarIcon } from "src/assets/icons/star.svg";
@@ -23,14 +22,18 @@ import { FANTOM, AVALANCHE, BINANCE, Chain, CHAINS, ETHEREUM, MOONRIVER, POLYGON
 // import { prettyDisplayNumber } from "src/helpers";
 // import { useWeb3Chain, Web3Connection } from "hooks/useWeb3Chain";
 import { Spinner } from "components/Spinner";
-import { ArrowDownIcon, StarIcon } from "@heroicons/react/solid";
+import { ArrowDownIcon, ChevronRightIcon, StarIcon } from "@heroicons/react/solid";
 import { CheckCircle } from "react-feather";
-import { formatNumber } from "functions";
+import { classNames, formatNumber } from "functions";
 // import Image from "next/image";
 import { useActiveWeb3React } from 'services/web3';
 // import { useUserInfo } from 'hooks/useAPI';
 // import { BigNumber } from "@ethersproject/bignumber";
 import { Wallet } from "@ethersproject/wallet";
+import { ChainId } from 'sdk';
+import { Button } from 'components/Button';
+import { useWalletModalToggle } from 'state/application/hooks';
+import Image from 'next/image';
 
 export const sleep = (seconds: number) => {
     return new Promise(resolve => setTimeout(() => resolve(null), seconds * 1000));
@@ -58,10 +61,10 @@ function getLastExchange(): Exchange {
     return undefined;
   }
 
-  const fromChain = CHAINS.find(c => c.chainId === lastExchange.from.chain);
-  const fromToken = fromChain.tokens.find(t => t.id === lastExchange.from.token);
+  const fromChain = CHAINS.find(c => c.chainId === lastExchange.from?.chain);
+  const fromToken = (fromChain ? fromChain : FANTOM).tokens.find(t => t.id === lastExchange.from?.token);
   const toChain = CHAINS.find(c => c.chainId === lastExchange.to.chain);
-  const toToken = toChain.tokens.find(t => t.id === lastExchange.to.token);
+  const toToken = (toChain ? toChain : ETHEREUM).tokens.find(t => t.id === lastExchange.to.token);
   return { from: { chain: fromChain, token: fromToken }, to: { chain: toChain, token: toToken } };
 }
 
@@ -69,8 +72,8 @@ function setLastExchange(from: { chain: Chain; token: Token }, to: { chain: Chai
   localStorage.setItem(
     "exchange",
     JSON.stringify({
-      from: { chain: from.chain.chainId, token: from.token.id },
-      to: { chain: to.chain.chainId, token: to.token?.id },
+      from: { chain: from?.chain?.chainId, token: from?.token?.id },
+      to: { chain: to.chain?.chainId, token: to.token?.id },
     }),
   );
 }
@@ -117,9 +120,9 @@ export default function Exchange() {
   const lastExchange = useMemo(() => {
     return getLastExchange() ?? { from: { chain: FANTOM, token: FTM }, to: { chain: FANTOM, token: LUX } };
   }, []);
-  const [from, setFrom] = useState<Token>(lastExchange.from.token);
+  const [from, setFrom] = useState<Token>(lastExchange.from?.token);
   const [to, setTo] = useState<Token>(lastExchange.to.token);
-  const [fromChain, setFromChain] = useState<Chain>(lastExchange.from.chain);
+  const [fromChain, setFromChain] = useState<Chain>(lastExchange.from?.chain);
   const [toChain, setToChain] = useState<Chain>(lastExchange.to.chain);
   const [fromUsd, setFromUsd] = useState<string>();
   const [toUsd, setToUsd] = useState<string>();
@@ -170,21 +173,23 @@ export default function Exchange() {
 
   const [decimals, setDecimals] = useState<number>(18);
 
-  const provider = useMemo(() => new ethers.providers.JsonRpcProvider(fromChain.rpc[0]), [fromChain]);
+  const provider = useMemo(() => new ethers.providers.JsonRpcProvider(
+    (fromChain ? fromChain : FANTOM).rpc[0]), [fromChain]
+  );
 
   async function getBalance(): Promise<EthersBigNumber> {
     if (!account) {
       return EthersBigNumber.from(0);
     }
-    if (from.isNative) {
+    if (from?.isNative) {
       // const { userInfo } = useUserInfo()
       // const bal = userInfo.nativeBalance
       // return await (BigNumber.from(bal));
     }
-    const ierc20 = new ethers.Contract(from.address, ierc20Abi.abi, provider);
+    const ierc20 = new ethers.Contract(from?.address, ierc20Abi.abi, provider);
     try {
       // TODO: fix below
-      return await ierc20.balanceOf(from.address);
+      return await ierc20.balanceOf(from?.address);
     } catch (e) {
       return EthersBigNumber.from(0);
     }
@@ -197,12 +202,12 @@ export default function Exchange() {
 
     let disposed = false;
     async function run() {
-      if (from.isNative) {
+      if (from?.isNative) {
         setDecimals(18);
         return;
       }
 
-      const erc20 = new ethers.Contract(from.address, erc20Abi, provider);
+      const erc20 = new ethers.Contract(from?.address, erc20Abi, provider);
       try {
         const decimals = await erc20.decimals();
         if (disposed) {
@@ -234,12 +239,12 @@ export default function Exchange() {
 
       try {
         const tradeRequest =
-          fromChain.chainId === toChain.chainId
+          fromChain.chainId === toChain?.chainId
             ? rubic.instantTrades
                 .calculateTrade(
                   {
                     blockchain: RUBIC_CHAIN_BY_ID.get(fromChain.chainId),
-                    address: from.isNative ? NATIVE_ADDRESS : from.address,
+                    address: from?.isNative ? NATIVE_ADDRESS : from?.address,
                   },
                   amount,
                   to.isNative ? NATIVE_ADDRESS : to.address,
@@ -247,32 +252,32 @@ export default function Exchange() {
                 .then((trades: InstantTrade[]): InstantTrade => trades[0])
             : rubic.crossChain.calculateTrade(
                 {
-                  address: from.isNative ? NATIVE_ADDRESS : from.address,
+                  address: from?.isNative ? NATIVE_ADDRESS : from?.address,
                   blockchain: RUBIC_CHAIN_BY_ID.get(fromChain.chainId),
                 },
                 amount,
                 {
                   address: to.isNative ? NATIVE_ADDRESS : to.address,
-                  blockchain: RUBIC_CHAIN_BY_ID.get(toChain.chainId),
+                  blockchain: RUBIC_CHAIN_BY_ID.get(toChain?.chainId),
                 },
               );
 
         const newTrade = await tradeRequest;
         const [newFromUsd, newToUsd] = await Promise.all([
           // Get the USD value of what's being _sold_.
-          from.isNative
+          from?.isNative
             ? rubic.cryptoPriceApi.getNativeCoinPrice(RUBIC_CHAIN_BY_ID.get(fromChain.chainId))
             : rubic.cryptoPriceApi.getErc20TokenPrice({
-                address: from.address,
+                address: from?.address,
                 blockchain: RUBIC_CHAIN_BY_ID.get(fromChain.chainId),
               }),
 
           // Get the USD value of what's being _bought_.
           to.isNative
-            ? rubic.cryptoPriceApi.getNativeCoinPrice(RUBIC_CHAIN_BY_ID.get(toChain.chainId))
+            ? rubic.cryptoPriceApi.getNativeCoinPrice(RUBIC_CHAIN_BY_ID.get(toChain?.chainId))
             : rubic.cryptoPriceApi.getErc20TokenPrice({
                 address: to.address,
-                blockchain: RUBIC_CHAIN_BY_ID.get(toChain.chainId),
+                blockchain: RUBIC_CHAIN_BY_ID.get(toChain?.chainId),
               }),
         ]);
         if (disposed) {
@@ -281,7 +286,7 @@ export default function Exchange() {
 
         setTrade(newTrade);
         setLoading(false);
-        setFromUsd(formatNumber(newFromUsd.multipliedBy(newTrade.from.tokenAmount)));
+        setFromUsd(formatNumber(newFromUsd.multipliedBy(newTrade.from?.tokenAmount)));
         setToUsd(formatNumber(newToUsd.multipliedBy(newTrade.to.tokenAmount)));
       } catch (e) {
         if (disposed) {
@@ -300,7 +305,7 @@ export default function Exchange() {
     setToUsd(undefined);
     setCanBuy(true);
 
-    const isTradingSameToken = fromChain.chainId === toChain.chainId && from?.id === to?.id;
+    const isTradingSameToken = fromChain?.chainId === toChain?.chainId && from?.id === to?.id;
     if (amount && parseFloat(amount) > 0 && !isTradingSameToken) {
       setLoading(true);
       run();
@@ -317,9 +322,11 @@ export default function Exchange() {
   }, [from, fromChain, to, toChain]);
 
   const [showConfirmation, setShowConfirmation] = useState<"hide" | "show" | "poor">("hide");
-  const [showSelectFrom, setShowSelectFrom] = useState(false);
-  const [showSelectTo, setShowSelectTo] = useState(false);
-  const amountRef = useRef<HTMLInputElement>(null);
+  const [showSelectFrom, setShowSelectFrom] = useState(false)
+  const [showSelectTo, setShowSelectTo] = useState(false)
+  const amountRef = useRef<HTMLInputElement>(null)
+  const toggleWalletModal = useWalletModalToggle()
+
   return (
     <>
       <Confirmation
@@ -359,25 +366,28 @@ export default function Exchange() {
       />
       <div className="flex mt-[30px] ml-auto mr-auto max-w-[45px] bg-dark-900">
         <div className="input">
-          <button className="token-select-button" onClick={() => setShowSelectFrom(true)}>
+          <Button className="token-select-button" 
+            onClick={() => setShowSelectFrom(true)}
+          >
             <div className="token-and-chain-logo">
-              <img className="block items-center" 
+              <Image className="block items-center" 
                 src={ from?.logo || DEFAULT_LOGO }
                 width="42" height="42" 
-                alt={from.name} 
+                alt={ from?.name || 'FTM' } 
               />
-              
-              <img
+
+              <Image
+                width="12" height="12"
                 className="chain-logo"
-                style={{ backgroundColor: fromChain.color }}
-                src={fromChain.logo}
-                alt={fromChain.name}
+                style={{ backgroundColor: fromChain?.color }}
+                src={fromChain?.logo || DEFAULT_LOGO}
+                alt={fromChain?.name}
               />
             </div>
-            {from.symbol}
+            {from?.symbol}
             {/* TODO */}
             {/* <ChevronIcon width="10" height="10" /> */}
-          </button>
+          </Button>
           <input
             ref={amountRef}
             placeholder="0.0"
@@ -425,23 +435,23 @@ export default function Exchange() {
                 alt={to?.name || 'Soul Power'} 
                 />
               <img
-                className="chain-logo"
-                style={{ backgroundColor: toChain.color }}
-                src={toChain.logo}
-                alt={toChain.name}
+                height="12"
+                // className="chain-logo"
+                style={{ backgroundColor: toChain?.color }}
+                src={toChain?.logo || DEFAULT_LOGO}
+                alt={toChain?.name}
               />
             </div>
             { to?.symbol || 'SOUL' }
-            {/* TODO */}
-            {/* <ChevronIcon width="10" height="10" /> */}
+            <ChevronRightIcon width="10" height="10" />
           </div>
           <div className="amount">
             {trade ? formatNumber(trade.to.tokenAmount) : canBuy ? "—" : "No liquidity"}
           </div>
-          <span className="usd">{toUsd ? `$${toUsd}` : "—"}</span>
+          <span className="usd">{toUsd ? `$${toUsd}` : `—`}</span>
         </div>
         <TradeDetail trade={trade} />
-        {!account && (
+        {/* {!account && ( */}
           <button
             className="swap-button"
             onClick={async () => {
@@ -462,32 +472,19 @@ export default function Exchange() {
             style={{ opacity: trade ? 1 : 0.5, cursor: trade ? "pointer" : "not-allowed" }}
             disabled={trade == undefined}
           >
-            {fromChain.chainId === toChain.chainId ? "Swap" : "Bridge"}
+            {fromChain.chainId === toChain?.chainId ? "Swap" : "Bridge"}
           </button>
-        )}
-        {/* {web3.connection === Web3Connection.ConnectedWrongChain && ( 
-          <button
-            className="swap-button"
-            onClick={async () => {
-              await web3.switchChain();
-            }}
-          >
-            Switch to {fromChain.name}
-          </button>
-        )}
-        */}
         {!account && (
-          <SwapButton
-            // onClick={async () => {
-              // try {
-              //   await wallet.connect();
-              // } catch (e) {
-                // Ignore "modal closed by user" exceptions.
-              // }
-            // }}
+        <Button
+            id="connect-wallet"
+            onClick={toggleWalletModal}
+            variant="outlined"
+            color={'#FFFFFF'}
+            className={'!border-none'}
+            size={'24px'}
           >
-            Connect Wallet
-          </SwapButton>
+            { `Connect Wallet` }
+        </Button>
         )}
       </div>
     </>
@@ -511,18 +508,14 @@ const TradeDetail: VFC<TradeDetailProps> = ({ trade }) => {
   }
 
   return (
-    <div className="flex mt-[20px]">
-      <div className="flex text-align-right">
-        <div>Minimum Received:</div>
-        <div>{min || "—"}</div>
-      </div>
-      <div className="flex text-align-right">
+    <div className="block mt-[0px]">
+      <div className="block text-align-right">
         <div>Price:</div>
         <div>
           {trade ? (
             <div>
-              1 {trade.to.symbol} = {formatNumber(trade.to.price.dividedBy(trade.from.price))}{" "}
-              {trade.from.symbol}
+              1 {trade.to.symbol} = {formatNumber(trade.to.price.dividedBy(trade.from?.price))}{" "}
+              {trade.from?.symbol}
             </div>
           ) : (
             <div>&mdash;</div>
@@ -533,7 +526,9 @@ const TradeDetail: VFC<TradeDetailProps> = ({ trade }) => {
         <div>Slippage:</div>
         <div>{trade ? `${trade.slippageTolerance * 100}%` : "—"}</div>
       </div> */}
+    <div>Minimum: {min}</div>
     </div>
+
   );
 };
 
@@ -544,12 +539,12 @@ interface TokenSelectProps {
 }
 const TokenSelect: React.VFC<TokenSelectProps> = ({ show, onClose, chain }) => {
   const [filter, setFilter] = useState("");
-  const [selectedChainId, setSelectedChainId] = useState(chain.chainId);
+  const [selectedChainId, setSelectedChainId] = useState(chain?.chainId);
   const selectedChain = useMemo(() => CHAINS.find(c => c.chainId === selectedChainId), [selectedChainId, CHAINS]);
   const input = useRef<HTMLInputElement>(null);
   const tokensList = useRef<HTMLDivElement>(null);
   const normalizedFilter = filter.trim().toLowerCase();
-  const filteredTokens = selectedChain.tokens.filter(({ name, symbol, address }) => {
+  const filteredTokens = selectedChain?.tokens.filter(({ name, symbol, address }) => {
     const isNameMatch = name.toLowerCase().includes(normalizedFilter);
     const isSymbolMatch = symbol.toLowerCase().includes(normalizedFilter);
     const isAddressMatch = address.startsWith(normalizedFilter) || address.startsWith("0x" + normalizedFilter);
@@ -579,7 +574,7 @@ const TokenSelect: React.VFC<TokenSelectProps> = ({ show, onClose, chain }) => {
     if (!show) {
       setTimeout(() => {
         setFilter("");
-        setSelectedChainId(chain.chainId);
+        setSelectedChainId(chain?.chainId || 250);
         showChainSelect(false);
         tokensList.current?.scrollTo({ top: 0 });
       }, 100);
@@ -601,7 +596,7 @@ const TokenSelect: React.VFC<TokenSelectProps> = ({ show, onClose, chain }) => {
             pointerEvents: show && isShowingChainSelect ? "all" : "none",
           }}
         >
-          <div className="chains-title">Select Chain</div>
+          <div className="block text-center">Select Chain</div>
           <div className="chains">
             {CHAINS.map((chain, i) => (
               <button
@@ -615,7 +610,7 @@ const TokenSelect: React.VFC<TokenSelectProps> = ({ show, onClose, chain }) => {
                 className="chain"
                 style={{ backgroundColor: chain.color }}
               >
-                <img src={chain.logo} width="24" height="24" />
+                <Image src={chain?.logo} width="24" height="24" />
                 <div style={{ flexGrow: 1, textAlign: "left" }}>{chain.name}</div>
                 {chain.chainId === selectedChainId && 
                 <CheckCircle width="16" height="16" style={{ color: "white" }} />
@@ -635,13 +630,12 @@ const TokenSelect: React.VFC<TokenSelectProps> = ({ show, onClose, chain }) => {
           <div className="token-select-head">
             <button
               className="selected-chain"
-              style={{ backgroundColor: selectedChain.color }}
+              style={{ backgroundColor: selectedChain?.color }}
               onClick={() => showChainSelect(true)}
             >
-              <img src={selectedChain.logo} width="24" height="24" />
-              <div style={{ flexGrow: 1, textAlign: "left" }}>{selectedChain.name}</div>
-              {/* TODO */}
-              {/* <ChevronIcon width="13" height="13" style={{ color: "white", marginTop: 2 }} /> */}
+              <Image src={selectedChain?.logo} width="24" height="24" />
+              <div style={{ flexGrow: 1, textAlign: "left" }}>{selectedChain?.name}</div>
+              <ChevronRightIcon width="13" height="13" style={{ color: "white", marginTop: 2 }} />
             </button>
 
             <form
@@ -652,17 +646,17 @@ const TokenSelect: React.VFC<TokenSelectProps> = ({ show, onClose, chain }) => {
             >
               <input
                 ref={input}
-                className="tokens-filter"
-                placeholder={`Search ${selectedChain.name} tokens`}
+                className="block w-full padding-[10px] border"
+                placeholder={`Search ${selectedChain?.name} tokens`}
                 value={filter}
                 onChange={e => setFilter(e.currentTarget.value)}
               />
             </form>
           </div>
           <div className="tokens-list" ref={tokensList}>
-            {filteredTokens.map(token => (
+            {filteredTokens?.map(token => (
               <div key={token.address} onClick={() => onClose({ token, chain: selectedChain })}>
-                <img src={token.logo} width="24" height="24" />
+                <Image src={token.logo} width="24" height="24" />
                 <div className="token-name">{token.name}</div>
                 {token.favorite && <StarIcon width="16" height="16" className="token-favorite" />}
               </div>
@@ -704,11 +698,10 @@ const Confirmation: React.VFC<ConfirmationProps> = ({ show, onClose, from, to, f
   }, [show]);
 
   return (
-    // <div
-    //   className="confirmation-overlay"
-    //   style={{ opacity: show !== "hide" ? 1 : 0, pointerEvents: show !== "hide" ? "unset" : "none" }}
-    // >
-    <div>
+    <div
+      className="confirmation-overlay"
+      style={{ opacity: show !== "hide" ? 1 : 0, pointerEvents: show !== "hide" ? "unset" : "none" }}
+    >
       <div className="confirmation-background" onClick={() => onClose()} />
       <div
         className="confirmation"
@@ -717,13 +710,13 @@ const Confirmation: React.VFC<ConfirmationProps> = ({ show, onClose, from, to, f
         <div className="transaction">
           <div className="transaction-side">
             <div className="transaction-token">
-              <img src={from.logo} width="16" height="16" />
-              {from.symbol}
+              <Image src={from?.logo} width="16" height="16" />
+              {from?.symbol}
               <span style={{ flexGrow: 1 }} />
               <span className="usd">${fromUsd ?? "0"}</span>
             </div>
             <div className="transaction-amount" style={{ color: show === "poor" ? "#e80625" : undefined }}>
-              {trade ? formatNumber(trade.from.tokenAmount) : "n/a"}
+              {trade ? formatNumber(trade.from?.tokenAmount) : "n/a"}
             </div>
           </div>
           <div className="transaction-direction">
@@ -731,7 +724,7 @@ const Confirmation: React.VFC<ConfirmationProps> = ({ show, onClose, from, to, f
           </div>
           <div className="transaction-side">
             <div className="transaction-token">
-              <img src={ to?.logo || DEFAULT_LOGO } width="16" height="16" />
+              <Image src={ to?.logo || DEFAULT_LOGO } width="16" height="16" />
               { to?.symbol || 'SOUL' }
               <span style={{ flexGrow: 1 }} />
               <span className="usd">${toUsd ?? "0"}</span>
@@ -739,7 +732,6 @@ const Confirmation: React.VFC<ConfirmationProps> = ({ show, onClose, from, to, f
             <div className="transaction-amount">{trade ? formatNumber(trade.to.tokenAmount) : "n/a"}</div>
           </div>
         </div>
-        {/* TODO: fix below */}
         {show === "poor" && <div className="poor-prompt">Your wallet doesn't have enough {from?.symbol || 'SOUL'}</div>}
         {show === "show" && (
           <div className="confirmation-prompt">

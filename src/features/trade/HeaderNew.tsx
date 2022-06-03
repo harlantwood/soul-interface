@@ -60,6 +60,18 @@ const HeaderNew: FC<HeaderNewProps> = ({ inputCurrency, outputCurrency }) => {
         <NavLink
           activeClassName="text-dark-600"
           href={{
+            pathname: '/crosschain',
+            // query: getQuery(inputCurrency, outputCurrency),
+          }}
+        >
+          <Typography weight={700} className="text-secondary hover:text-purple">
+            {i18n._(t`Cross`)}
+          </Typography>
+        </NavLink>
+
+        <NavLink
+          activeClassName="text-dark-600"
+          href={{
             pathname: '/exchange/limit',
             query: getQuery(inputCurrency, outputCurrency),
           }}
@@ -69,6 +81,8 @@ const HeaderNew: FC<HeaderNewProps> = ({ inputCurrency, outputCurrency }) => {
           </Typography>
         </NavLink>
 
+
+       
         <NavLink
           activeClassName="text-dark-600"
           href={{
