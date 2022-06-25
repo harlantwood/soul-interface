@@ -1,7 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { MASTERCHEF_ADDRESS, Token, validateAndParseAddress } from 'sdk'
 import { Input as NumericalInput } from '../../../components/NumericalInput'
-import { Fraction } from 'entities'
 import { useActiveWeb3React } from 'hooks/useActiveWeb3React'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
 import React, { useState } from 'react'
@@ -21,6 +20,7 @@ import { tryParseAmount } from 'functions/parse'
 import { Dots } from 'features/swap/styleds'
 import { formatNumber } from 'functions'
 import { isNative } from 'lodash'
+import { Fraction } from 'entities/bignumber/Fraction'
 
 const fixedFormatting = (value: BigNumber, decimals?: number) => {
     return Fraction.from(value, BigNumber.from(10).pow(BigNumber.from(decimals))).toString(decimals)
