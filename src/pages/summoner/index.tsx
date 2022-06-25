@@ -6,12 +6,12 @@ import Container from '../../components/Container'
 import Head from 'next/head'
 import FarmList from '../../features/summoner/List'
 // import { NewFeature } from 'components/Banner'
-import { useFarms } from 'hooks'
-// import { useSummonerUserInfo } from 'hooks/useAPI'
+import { useFarms, useSummonerInfo } from 'hooks'
+import { useSummonerUserInfo } from 'hooks/useAPI'
 import { POOLS } from 'constants/farms'
 import useSummoner from 'features/mines/hooks/useMasterChef'
 import { useTVL } from 'hooks/useV2Pairs'
-import { usePositions } from 'features/mines/hooks'
+import { usePositions, useSoulFarms } from 'features/mines/hooks'
 
 import { useFuse } from 'hooks'
 import { useRouter } from 'next/router'
@@ -21,13 +21,13 @@ import { TridentHeader } from 'layouts/Trident'
 import { formatNumberScale } from 'functions'
 import { Button } from 'components/Button'
 import { addTransaction } from 'state/transactions/actions'
+import { usePairPrice } from 'hooks/usePairData'
 import { useActiveWeb3React } from 'services/web3/hooks/useActiveWeb3React'
 
 const Summoner = () => {
   // const { chainId } = useActiveWeb3React()
   const router = useRouter()
   const [pendingTx, setPendingTx] = useState(false)
-  const { chainId } = useActiveWeb3React()
 
   const soulPrice = useSoulPrice()
 
@@ -42,7 +42,7 @@ const Summoner = () => {
     pool.owner = 'SoulSwap'
     pool.balance = 0
 
-    const pair = POOLS[chainId || 250][pool.lpToken]
+    const pair = POOLS[250][pool.lpToken]
 
     const tvl = pool.pair?.token1
     ? Number(pool?.pairPrice) * Number(pool.lpBalance) / 1e18

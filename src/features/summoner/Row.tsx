@@ -65,11 +65,12 @@ export const ActiveRow = ({ pid, farm, lpToken }) => {
     // console.log(assetAddress)
     const assetDecimals = Number(pairInfo.pairDecimals)
     // const assetSymbol = pairInfo.symbol
-
+    
     const token0Symbol = pairInfo.token0Symbol
-    // const token1Symbol = pairInfo.token1Symbol
-    // const token0Address = pairInfo.token0Address
-    // const token1Address = pairInfo.token1Address
+    const token1Symbol = pairInfo.token1Symbol
+    
+    const token0Address = pairInfo.token0Address
+    const token1Address = pairInfo.token1Address
 
     const [showOptions, setShowOptions] = useState(false)
     const [openDeposit, setOpenDeposit] = useState(false)
