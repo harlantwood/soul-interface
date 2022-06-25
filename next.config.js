@@ -49,11 +49,11 @@ module.exports = withBundleAnalyzer(
         //   destination: '/',
         //   permanent: true,
         // },
-        // {
-        //   source: '/yield',
-        //   destination: '/summoner',
-        //   permanent: true,
-        // },
+        {
+          source: '/yield',
+          destination: '/summoner',
+          permanent: true,
+        },
         {
           source: '/autostake',
           destination: '/soul/autostake',
