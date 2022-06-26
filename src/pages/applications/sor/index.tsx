@@ -14,7 +14,7 @@ import StableInputPanel from 'components/StableInputPanel'
 import { useSwapState } from 'state/swap/hooks'
 import { AutoColumn } from 'components/Column'
 import QuestionHelper from 'components/QuestionHelper'
-import Alert from 'components/Alert'
+// import Alert from 'components/Alert'
 import { ApprovalState, useApproveCallback, useSorMasterContract } from 'hooks'
 import { getAddress } from '@ethersproject/address'
 import {

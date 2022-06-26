@@ -3,6 +3,7 @@ import { ChainId } from 'sdk'
 import BSC from './mappings/bsc'
 import FANTOM from './mappings/fantom'
 import ETHEREUM from './mappings/ethereum'
+import AVAX from './mappings/avalanche'
 
 export type ChainlinkPriceFeedEntry = {
   from: string
@@ -31,5 +32,6 @@ export const CHAINLINK_PRICE_FEED_MAP: {
 } = {
   [ChainId.ETHEREUM]: ETHEREUM,
   [ChainId.BSC]: BSC,
+  [ChainId.AVALANCHE]: AVAX,
   [ChainId.FANTOM]: FANTOM
 }

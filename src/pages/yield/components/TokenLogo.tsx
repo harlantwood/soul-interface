@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import PlaceHolder from 'assets/images/placeholder.png'
+// import PlaceHolder from 'assets/images/placeholder.png'
 import { getAddress } from '@ethersproject/address'
 import styled from 'styled-components'
 import { ChainId } from 'sdk'
@@ -58,7 +58,7 @@ export default function TokenLogo({ address, header = false, size, ...rest }: an
     if (error) {
         return (
             <Inline>
-                <Image {...rest} alt={''} src={PlaceHolder} size={size} />
+                <Image {...rest} alt={''} src={"https://raw.githubusercontent.com/hadeswap/hadeswap-interface/master/src/assets/images/placeholder.png"} size={size} />
             </Inline>
         )
     }
