@@ -1,6 +1,7 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
 /node_modules
+yarn.lock
 
 .DS_Store
 .env
@@ -22,8 +23,6 @@ public/workbox*.js.map
 /locale/_build/
 /locale/**/*.js
 /locale/**/*.po
-
-.env
 
 lokalise.yaml
 locale/*.po
