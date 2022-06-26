@@ -4,8 +4,8 @@ import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import useSwiper from 'hooks/useSwiper'
 import { orderBy } from 'lodash'
-// import SwiperCore, { Autoplay } from 'swiper/core/core'
-import 'swiper/swiper.min.css'
+import SwiperCore, { Autoplay } from 'swiper'
+// import 'swiper/swiper.min.css'
 import { Flex } from 'soulswap-uikit'
 import useActiveWeb3React from 'hooks/useActiveWeb3React'
 import { useFetchHomepageNews, useHomepageNews } from 'state/hooks'
@@ -14,7 +14,7 @@ import { NewsCard, NewsWrapper, SkeletonWrapper } from './styles'
 
 const SLIDE_DELAY = 5000
 
-// SwiperCore.use([Autoplay])
+SwiperCore.use([Autoplay])
 
 const News: React.FC = () => {
   const { chainId } = useActiveWeb3React()
@@ -37,9 +37,9 @@ const News: React.FC = () => {
     swiper.slideTo(newsLength + index)
   }
 
-  // const handleSlide = (event: SwiperCore) => {
-  //   setActiveSlide(event.activeIndex - newsLength === newsLength ? 0 : event.activeIndex - newsLength)
-  // }
+  const handleSlide = (event: SwiperCore) => {
+    setActiveSlide(event.activeIndex - newsLength === newsLength ? 0 : event.activeIndex - newsLength)
+  }
 
   useEffect(() => {
     if (isIntersecting) {
@@ -85,7 +85,7 @@ const News: React.FC = () => {
                 resizeObserver
                 lazy
                 preloadImages={false}
-                // onSlideChange={handleSlide}
+                onSlideChange={handleSlide}
               >
                 {filterNews?.map((news, index) => {
                   return (
