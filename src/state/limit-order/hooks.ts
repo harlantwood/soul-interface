@@ -9,7 +9,7 @@ import {
   SOUL,
   Trade,
   TradeType,
-  WNATIVE_ADDRESS,
+  // WNATIVE_ADDRESS,
   ZERO,
 } from 'sdk'
 import { isAddress, tryParseAmount } from 'functions'
