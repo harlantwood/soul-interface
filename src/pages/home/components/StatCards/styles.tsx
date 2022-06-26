@@ -1,4 +1,5 @@
-import { Card } from 'soulswap-uikit'
+// import { Card } from 'soulswap-uikit'
+import Card from 'components/Card'
 import styled from 'styled-components'
 
 export const StyledCard = styled(Card)`

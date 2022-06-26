@@ -5,11 +5,11 @@ import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import SwiperCore from 'swiper'
 import { useFetchHomepageLaunchCalendar, useHomepageLaunchCalendar } from 'state/hooks'
 import { useTheme } from 'styled-components'
-import useSwiper from 'hooks/useSwiper'
+// import useSwiper from 'hooks/useSwiper'
 // import { QuestionMark } from 'components/Icons'
 import { QuestionMarkCircleIcon as QuestionMark } from '@heroicons/react/solid'
 
-import { useTranslation } from 'contexts/Localization'
+// import { useTranslation } from 'contexts/Localization'
 import {
   Bubble,
   CalendarImg,
@@ -25,19 +25,18 @@ const LaunchCalendar: React.FC = () => {
   const today = new Date()
   today.setHours(today.getHours() - 6)
   useFetchHomepageLaunchCalendar(loadNews)
-  const { swiper, setSwiper } = useSwiper()
+  // const { swiper, setSwiper } = useSwiper()
   const [activeSlide, setActiveSlide] = useState(0)
   const theme = useTheme()
   const launchCal = useHomepageLaunchCalendar()
   const sortLaunch = launchCal?.filter((launch) => new Date(launch.launchTime) > today)
   const launchCalLength = sortLaunch?.length || 0
   const { observerRef, isIntersecting } = useIntersectionObserver()
-  const { t } = useTranslation()
 
-  const slideNewsNav = (index: number) => {
-    setActiveSlide(index)
-    swiper.slideTo(index)
-  }
+  // const slideNewsNav = (index: number) => {
+  //   setActiveSlide(index)
+  //   // swiper.slideTo(index)
+  // }
 
   const handleSlide = (event: SwiperCore) => {
     setActiveSlide(event.activeIndex)
@@ -60,7 +59,7 @@ const LaunchCalendar: React.FC = () => {
               <Swiper
                 id="launchSwiper"
                 initialSlide={0}
-                onSwiper={setSwiper}
+                // onSwiper={setSwiper}
                 spaceBetween={20}
                 slidesPerView="auto"
                 resizeObserver

@@ -4,7 +4,7 @@ import CountUp from 'react-countup'
 import { useTheme } from 'styled-components'
 import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import { useFetchHomepageStats, useHomepageStats } from 'state/hooks'
-import { useTranslation } from 'contexts/Localization'
+// import { useTranslation } from 'contexts/Localization'
 import { StyledCard, CardWrapper } from './styles'
 import { statsData } from './statsData'
 import { t } from '@lingui/macro'
@@ -14,11 +14,11 @@ const StatCards: React.FC = () => {
   const [loadStats, setLoadStats] = useState(false)
   const isMobile = isSm || isXs
   const { observerRef, isIntersecting } = useIntersectionObserver()
-  const { t } = useTranslation()
+  // const { t } = useTranslation()
   useFetchHomepageStats(loadStats)
   const rawStats = useHomepageStats()
   const theme = useTheme()
-  const stats = statsData(t).map((stat) => {
+  const stats = statsData(['']).map((stat) => {
     return { ...stat, value: rawStats ? rawStats[stat.id] : null }
   })
 
@@ -47,7 +47,7 @@ const StatCards: React.FC = () => {
                 <Flex justifyContent="center" alignItems="center" style={{ width: '100%' }}>
                   {stat?.value ? (
                     <Text fontSize="28px" bold style={{ lineHeight: '30px' }}>
-                      {stat?.title !== t('Partners') && '$'}
+                      {stat?.title !== 'Partners' && '$'}
                       <CountUp end={stat?.value} decimals={0} duration={1} separator="," />
                     </Text>
                   ) : (

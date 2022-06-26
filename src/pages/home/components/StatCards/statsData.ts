@@ -1,29 +1,28 @@
 import { Tvl, MarketCap, Partners, Trade } from 'components/Icons'
 import { StatType } from './types'
-import { ContextApi } from '../../../../contexts/Localization/types'
 
-export const statsData: (t: ContextApi['t']) => StatType[] = (t) => [
+export const statsData: (t: ['']) => StatType[] = (t) => [
   {
     logo: Tvl,
-    title: t('Total Value Locked'),
+    title: 'Total Value Locked',
     value: null,
     id: 'tvl',
   },
   {
     logo: Trade,
-    title: t('Total Trade Volume'),
+    title: 'Total Trade Volume',
     value: null,
     id: 'totalVolume',
   },
   {
     logo: MarketCap,
-    title: t('Market Cap'),
+    title: 'Market Cap',
     value: null,
     id: 'marketCap',
   },
   {
     logo: Partners,
-    title: t('Partners'),
+    title: 'Partners',
     value: null,
     id: 'partnerCount',
   },

@@ -9,7 +9,7 @@ function track({
   data: any
   value?: number | string
 }): void {
-  dataLayer?.push({ event, value, chain, ...data })
+  // dataLayer?.push({ event, value, chain, ...data })
 }
 
 export default track
