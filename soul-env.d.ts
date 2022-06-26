@@ -4,6 +4,9 @@ import Fraction from './src/entities/bignumber/Fraction'
 
 declare module 'fortmatic'
 
+declare const dataLayer: Array<any>
+/// <reference types="react-scripts" />
+
 declare global {
   interface String {
     toBigNumber(decimals: number): BigNumber
