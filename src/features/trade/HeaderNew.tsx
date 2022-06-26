@@ -5,10 +5,8 @@ import { Currency } from 'sdk'
 import NavLink from 'components/NavLink'
 import Settings from 'components/Settings'
 import Typography from 'components/Typography'
-import MyOrders from 'features/limit-order/MyOrders'
 import { useRouter } from 'next/router'
 import { currencyId } from '../../functions'
-import ExternalLink from 'components/ExternalLink'
 
 const getQuery = (input?: Currency, output?: Currency) => {
   if (!input && !output) return

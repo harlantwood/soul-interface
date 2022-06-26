@@ -64,7 +64,7 @@ export default function Calculator() {
     }, [lumensAmount, priceAtPurchase]);
 
     const calcNewBalance = () => {
-        let value = parseFloat(rewardYield.toString()) / 100;
+        let value = parseFloat((Number(rewardYield) / 100).toString());
         value = Math.pow(value - 1, 1 / (365 * 3)) - 1 || 0;
         let balance = Number(lumensAmount);
         for (let i = 0; i < Number(days) * 3; i++) {
@@ -75,7 +75,7 @@ export default function Calculator() {
 
     useEffect(() => {
         const newBalance = calcNewBalance();
-        setRewardsEstimation(Number(newBalance).toFixed(2));
+        setRewardsEstimation(Number(newBalance).toFixed(4));
         const newPotentialReturn = newBalance * (parseFloat(futureMarketPrice.toString()) || 0);
         setPotentialReturn(Number(newPotentialReturn).toFixed(2));
     }, [days, rewardYield, futureMarketPrice, lumensAmount]);

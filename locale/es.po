@@ -55,18 +55,6 @@ msgstr ""
 msgid "0.25% of each swap goes to liquidity providers."
 msgstr ""
 
-msgid "1 Hour"
-msgstr ""
-
-msgid "1 Week"
-msgstr ""
-
-msgid "24 Hours"
-msgstr ""
-
-msgid "30 Days"
-msgstr ""
-
 msgid "50%"
 msgstr ""
 
@@ -154,9 +142,6 @@ msgstr ""
 msgid "Approve CoffinBox"
 msgstr ""
 
-msgid "Approve Master Contract"
-msgstr ""
-
 msgid "Approve Underworld"
 msgstr ""
 
@@ -241,6 +226,9 @@ msgstr ""
 msgid "Borrowing allows you to obtain liquidity without selling. Your borrow limit depends on the amount of deposited collateral. You will be able to borrow up to 75% of your collateral and repay at any time with accrued interest."
 msgstr ""
 
+msgid "Bounty"
+msgstr ""
+
 msgid "Bridge"
 msgstr ""
 
@@ -275,9 +263,6 @@ msgid "Calculated based on current rates. Rates are estimates for your convenien
 msgstr ""
 
 msgid "Calculator"
-msgstr ""
-
-msgid "Cancel Order"
 msgstr ""
 
 msgid "Cancelled"
@@ -381,12 +366,6 @@ msgstr ""
 msgid "Confirm Enchantment"
 msgstr ""
 
-msgid "Confirm Limit Order"
-msgstr ""
-
-msgid "Confirm Order"
-msgstr ""
-
 msgid "Confirm Removal"
 msgstr ""
 
@@ -435,13 +414,7 @@ msgstr ""
 msgid "Copy"
 msgstr ""
 
-msgid "Create Limit Order"
-msgstr ""
-
 msgid "Create Lock"
-msgstr ""
-
-msgid "Create Order"
 msgstr ""
 
 msgid "Create Pair"
@@ -460,6 +433,9 @@ msgid "Create lock"
 msgstr ""
 
 msgid "Create pool"
+msgstr ""
+
+msgid "Cross"
 msgstr ""
 
 msgid "Current Percentage"
@@ -495,7 +471,10 @@ msgstr ""
 msgid "Deposit assets in equal amounts"
 msgstr ""
 
-msgid "Deposit liquidity or lent asset. Earn SOUL rewards."
+msgid "Deposit liquidity or lent assets. Earn SOUL."
+msgstr ""
+
+msgid "Deposit liquidity. Mint SOUL."
 msgstr ""
 
 msgid "Deposit to CoffinBox"
@@ -531,9 +510,6 @@ msgstr ""
 msgid "Disconnect"
 msgstr ""
 
-msgid "Do not show again"
-msgstr ""
-
 msgid "Documentation"
 msgstr ""
 
@@ -549,10 +525,10 @@ msgstr ""
 msgid "Earn"
 msgstr ""
 
-msgid "Either return to the {link}, or change to an available network."
+msgid "Earned"
 msgstr ""
 
-msgid "Email"
+msgid "Either return to the {link}, or change to an available network."
 msgstr ""
 
 msgid "Enable Expert Mode"
@@ -611,12 +587,6 @@ msgid ""
 "that often result in bad rates and lost funds."
 msgstr ""
 
-msgid "Expiration"
-msgstr ""
-
-msgid "Expiration is the time at which the order will become invalid"
-msgstr ""
-
 msgid "Explore"
 msgstr ""
 
@@ -650,6 +620,18 @@ msgstr ""
 msgid "Fee"
 msgstr ""
 
+msgid "Fee Amount"
+msgstr ""
+
+msgid "Fee Period"
+msgstr ""
+
+msgid "Fee Period Ends"
+msgstr ""
+
+msgid "Fee Period Remaining"
+msgstr ""
+
 msgid "Fees"
 msgstr ""
 
@@ -663,9 +645,6 @@ msgid "Fixed ratio"
 msgstr ""
 
 msgid "Forfeit"
-msgstr ""
-
-msgid "Forum"
 msgstr ""
 
 msgid "French"
@@ -727,9 +706,6 @@ msgstr ""
 msgid "Historical Total Locked: {0} SOUL"
 msgstr ""
 
-msgid "History"
-msgstr ""
-
 msgid "How to Participate?"
 msgstr ""
 
@@ -763,13 +739,7 @@ msgstr ""
 msgid "Import token"
 msgstr ""
 
-msgid "In Coffin:"
-msgstr ""
-
 msgid "In Wallet"
-msgstr ""
-
-msgid "In Wallet:"
 msgstr ""
 
 msgid "Inactive"
@@ -809,16 +779,6 @@ msgid "Invalid pair"
 msgstr ""
 
 msgid "Isolated lending markets mitigate your risks as an asset lender. Know exactly what collateral is available to you in the event of counter party insolvency."
-msgstr ""
-
-msgid ""
-"It seems like you have open orders while the limit order master contract is not approved. Please make\n"
-"sure you approved the limit order master contract or the order will not execute"
-msgstr ""
-
-msgid ""
-"It seems like you have open orders while the limit order master contract is not yet approved. Please make\n"
-"sure you have approved the limit order master contract or the order will not execute"
 msgstr ""
 
 msgid "Italian"
@@ -875,12 +835,6 @@ msgstr ""
 msgid "Limit"
 msgstr ""
 
-msgid "Limit Orders"
-msgstr ""
-
-msgid "Limit orders use funds from CoffinBox, to create a limit order depositing into CoffinBox is required."
-msgstr ""
-
 msgid "Links"
 msgstr ""
 
@@ -933,9 +887,6 @@ msgid "Luxor"
 msgstr ""
 
 msgid "Luxor Balance"
-msgstr ""
-
-msgid "Luxor Bonds."
 msgstr ""
 
 msgid "Luxor Money"
@@ -1031,9 +982,6 @@ msgstr ""
 msgid "No liquidity found to do swap"
 msgstr ""
 
-msgid "No open orders"
-msgstr ""
-
 msgid "No pool found"
 msgstr ""
 
@@ -1070,13 +1018,7 @@ msgstr ""
 msgid "Open Main Menu"
 msgstr ""
 
-msgid "Open orders"
-msgstr ""
-
 msgid "Oracle"
-msgstr ""
-
-msgid "Orders"
 msgstr ""
 
 msgid "Our Resources."
@@ -1111,13 +1053,7 @@ msgstr ""
 msgid "Pair your SOUL with FTM and add to Farms for more SOUL and an enhanced AURA."
 msgstr ""
 
-msgid "Pay"
-msgstr ""
-
 msgid "Pay from"
-msgstr ""
-
-msgid "Pay from:"
 msgstr ""
 
 msgid "Pending"
@@ -1126,16 +1062,10 @@ msgstr ""
 msgid "Pending Treasury Transfer"
 msgstr ""
 
-msgid "Place a limit order or check the status of your past orders"
-msgstr ""
-
 msgid "Please connect to the appropriate network."
 msgstr ""
 
 msgid "Please make sure your {0} balance is sufficient to withdraw and then try again."
-msgstr ""
-
-msgid "Please note that after order execution, your tokens will be received in your CoffinBox"
 msgstr ""
 
 msgid "Please note the recipient address is different from the connected wallet address."
@@ -1157,9 +1087,6 @@ msgid "Pool Found!"
 msgstr ""
 
 msgid "Pool Tokens"
-msgstr ""
-
-msgid "Pools"
 msgstr ""
 
 msgid "Portfolio"
@@ -1272,19 +1199,22 @@ msgstr ""
 msgid "Repay"
 msgstr ""
 
+msgid "Request"
+msgstr ""
+
 msgid "Resources"
 msgstr ""
 
 msgid "Restricts swaps to direct pairs only."
 msgstr ""
 
-msgid "Review Limit Order"
-msgstr ""
-
 msgid "Rewards"
 msgstr ""
 
 msgid "Rewards:"
+msgstr ""
+
+msgid "Ritual (Fee) Duration"
 msgstr ""
 
 msgid "Roll it back - this feature is not yet supported on {0}."
@@ -1307,6 +1237,9 @@ msgid ""
 "Use SEANCE to reclaim your SOUL when you want to withdraw.\n"
 "You may trade or farm your SEANCE and risk locking your SOUL for all eternity...\n"
 "Either way, while staked, you'll earn more SOUL over time."
+msgstr ""
+
+msgid "SELECT PATH"
 msgstr ""
 
 msgid "SELF"
@@ -1337,6 +1270,12 @@ msgid "STAKE"
 msgstr ""
 
 msgid "SWAP"
+msgstr ""
+
+msgid "Sacrifice"
+msgstr ""
+
+msgid "Salvation"
 msgstr ""
 
 msgid "Scarabs are a neat way to share your SOUL with anyone, so long as they're also willing to perform a ritual and make a small sacrfice..."
@@ -1393,7 +1332,7 @@ msgstr ""
 msgid "Slippage tolerance"
 msgstr ""
 
-msgid "Something went wrong during signing of the approval. This is expected for hardware wallets, such as Trezor and Ledger. Click 'Approve CoffinBox' again for approving using the fallback method"
+msgid "Socials"
 msgstr ""
 
 msgid "Something went wrong during signing of the approval. This is expected for hardware wallets, such as Trezor and Ledger. Click again and the fallback method will be used"
@@ -1405,6 +1344,9 @@ msgstr ""
 msgid "Soul Vault"
 msgstr ""
 
+msgid "SoulPay"
+msgstr ""
+
 msgid "SoulSwap"
 msgstr ""
 
@@ -1412,9 +1354,6 @@ msgid "SoulSwap Vault is a set of high incentivized pools. Long term supporters 
 msgstr ""
 
 msgid "SoulSwap utilizes a token vault called CoffinBox that has balances separate from your wallet."
-msgstr ""
-
-msgid "SoulSwapFinance@gmail.com"
 msgstr ""
 
 msgid "Spanish"
@@ -1449,6 +1388,9 @@ msgid ""
 "one click"
 msgstr ""
 
+msgid "Staked"
+msgstr ""
+
 msgid "Staking"
 msgstr ""
 
@@ -1462,6 +1404,9 @@ msgid "Step Three"
 msgstr ""
 
 msgid "Step Two"
+msgstr ""
+
+msgid "Stream"
 msgstr ""
 
 msgid "Submit"
@@ -1486,9 +1431,6 @@ msgid "Summon Scarabs"
 msgstr ""
 
 msgid "Summon Souls with Liquidity."
-msgstr ""
-
-msgid "Summon an Empire."
 msgstr ""
 
 msgid "Supplied"
@@ -1595,6 +1537,9 @@ msgid ""
 "click manage to activate more lists."
 msgstr ""
 
+msgid "Tools"
+msgstr ""
+
 msgid "Total"
 msgstr ""
 
@@ -1682,6 +1627,9 @@ msgstr ""
 msgid "Unsupported Asset"
 msgstr ""
 
+msgid "Until Salvation"
+msgstr ""
+
 msgid "Unwrap"
 msgstr ""
 
@@ -1701,6 +1649,9 @@ msgid "Use one of the buttons to set a percentage or enter a value manually usin
 msgstr ""
 
 msgid "Use the toggle to switch between balances when interacting with our platform."
+msgstr ""
+
+msgid "Utilities"
 msgstr ""
 
 msgid "Utilized"
@@ -1742,10 +1693,7 @@ msgstr ""
 msgid "View your Trades."
 msgstr ""
 
-msgid "View {0} Open Order"
-msgstr ""
-
-msgid "View {0} Open Orders"
+msgid "Vote"
 msgstr ""
 
 msgid "WALLET"
@@ -1826,9 +1774,6 @@ msgstr ""
 msgid "Yield Details"
 msgstr ""
 
-msgid "You Pay:"
-msgstr ""
-
 msgid "You Receive"
 msgstr ""
 
@@ -1851,12 +1796,6 @@ msgid "You must unstake first, if you want to remove from your staked position."
 msgstr ""
 
 msgid "You need to first approve LP tokens and then migrate it"
-msgstr ""
-
-msgid "You pay"
-msgstr ""
-
-msgid "You receive"
 msgstr ""
 
 msgid "You'll receive (at least):"

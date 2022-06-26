@@ -9,7 +9,6 @@ import Dots from 'components/Dots'
 import Portals from 'components/Portals'
 import { SyncWithRedux } from 'components/SyncWithRedux'
 import Web3ReactManager from 'components/Web3ReactManager'
-// import { MultichainExploitAlertModal } from 'features/user/MultichainExploitAlertModal'
 import getLibrary from 'functions/getLibrary'
 import { exception, GOOGLE_ANALYTICS_TRACKING_ID, pageview } from 'functions/gtag'
 import DefaultLayout from 'layouts/Default'
@@ -158,8 +157,6 @@ function MyApp({ Component, pageProps, fallback, err }) {
                     <ModalProvider>
                       <Layout>
                         <Guard>
-                          {/* TODO: Added alert Jan 25. Delete component after a few months. */}
-                          {/* <MultichainExploitAlertModal /> */}
                           {/*@ts-ignore TYPE NEEDS FIXING*/}
                           <Gelato>
                             <Component {...pageProps} err={err} />

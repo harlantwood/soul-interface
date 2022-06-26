@@ -4,7 +4,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { Zero } from '@ethersproject/constants'
 import { ChainId, UNDERWORLD_ADDRESS, NATIVE, Token, USD, WNATIVE_ADDRESS } from 'sdk'
 import { CHAINLINK_PRICE_FEED_MAP } from 'config/oracles/chainlink'
-import { Fraction } from 'entities'
+// import { Fraction } from 'entities'
 import { Feature } from 'enums'
 import {
   accrue,
