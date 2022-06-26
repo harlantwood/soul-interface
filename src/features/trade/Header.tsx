@@ -2,7 +2,6 @@ import { ChainId, Currency, Percent } from '../../sdk'
 import React, { FC, useState } from 'react'
 
 import Gas from '../../components/Gas'
-import MyOrders from '../limit-order/MyOrders'
 import NavLink from '../../components/NavLink'
 import Settings from '../../components/Settings'
 import { currencyId } from '../../functions'
@@ -92,7 +91,7 @@ const ExchangeHeader: FC<ExchangeHeaderProps> = ({ input, output, allowedSlippag
         <div className="grid grid-flow-col gap-1">
           {isLimitOrder && (
             <div className="items-center h-full w-full cursor-pointer hover:bg-dark-800 rounded px-3 py-1.5">
-              <MyOrders />
+              {/* <MyOrders /> */}
             </div>
           )}
           {/* {chainId === ChainId.ETHEREUM && (

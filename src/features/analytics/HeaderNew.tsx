@@ -1,11 +1,10 @@
 import { ChainId, Currency, Percent } from '../../sdk'
 import React, { FC, useState } from 'react'
 
-import Gas from '../../components/Gas'
-import MyOrders from '../limit-order/MyOrders'
+// import Gas from '../../components/Gas'
 import NavLink from '../../components/NavLink'
-import Settings from '../../components/Settings'
-import { currencyId } from '../../functions'
+// import Settings from '../../components/Settings'
+// import { currencyId } from '../../functions'
 import { t } from '@lingui/macro'
 import { useActiveWeb3React } from 'services/web3'
 import { useLingui } from '@lingui/react'
@@ -29,11 +28,11 @@ interface AnalyticsHeaderProps {
 
 const AnalyticsHeaderNew: FC<AnalyticsHeaderProps> = ({ input, output, allowedSlippage }) => {
   const { i18n } = useLingui()
-  const { chainId } = useActiveWeb3React()
-  const router = useRouter()
-  const [animateWallet, setAnimateWallet] = useState(false)
-  const isRemove = router.asPath.startsWith('/remove')
-  const isLimitOrder = router.asPath.startsWith('/limit-order')
+  // const { chainId } = useActiveWeb3React()
+  // const router = useRouter()
+  // const [animateWallet, setAnimateWallet] = useState(false)
+  // const isRemove = router.asPath.startsWith('/remove')
+  // const isLimitOrder = router.asPath.startsWith('/limit-order')
  
 
   return (
