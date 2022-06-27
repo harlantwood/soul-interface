@@ -12,7 +12,7 @@ const config = {
   ],
   // Network specific configuration
   [ChainId.ETHEREUM]: {
-    averageBlockTimeInSeconds: 13,
+    averageBlockTimeInSeconds: 12,
     underworld: { blacklistedTokens: [], blacklistedOracles: ['0x8f2CC3376078568a04eBC600ae5F0a036DBfd812'] },
   },
   [ChainId.TELOS]: {
