@@ -30,7 +30,7 @@ export interface Farm extends FarmConfig {
   apr?: string
   apy?: string
   lpApr?: string
-  bananaPrice?: number
+  soulPrice?: number
   lpValueUsd?: number
   userData?: {
     allowance: BigNumber
@@ -208,12 +208,12 @@ export interface Stats {
   aggregateAprPerDay: number
   aggregateAprPerMonth: number
   aggregateAprPerWeek: number
-  bananaPrice: number
-  bananasEarnedPerDay: number
-  bananasEarnedPerMonth: number
-  bananasEarnedPerWeek: number
-  bananasEarnedPerYear: number
-  bananasInWallet: number
+  soulPrice: number
+  soulsEarnedPerDay: number
+  soulsEarnedPerMonth: number
+  soulsEarnedPerWeek: number
+  soulsEarnedPerYear: number
+  soulsInWallet: number
   dollarsEarnedPerDay: number
   dollarsEarnedPerMonth: number
   dollarsEarnedPerWeek: number
@@ -266,7 +266,7 @@ export interface AuctionsOverall {
 }
 
 export interface StatsOverall {
-  bananaPrice: number
+  soulPrice: number
   tvl: number
   totalLiquidity: number
   circulatingSupply: number

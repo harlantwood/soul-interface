@@ -13,7 +13,7 @@ export interface Ifo {
   saleAmount: string
   raiseAmount: string
   totalAmountRaised?: string // Used to show the subscription amount post iao
-  bananaToBurn?: string
+  soulToBurn?: string
   projectSiteUrl: string
   currency: string
   currencyAddress: string
