@@ -70,6 +70,7 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     FANTOM.SOUL,
     FANTOM.SEANCE,
     FANTOM.LUX,
+    FANTOM.SOR,
     FANTOM.WLUM,
   ],
   [ChainId.BSC]: [
@@ -186,7 +187,10 @@ export const COMMON_BASES: ChainTokenList = {
     ...WRAPPED_NATIVE_ONLY[ChainId.TELOS]
   ],
   [ChainId.AVALANCHE]: [
-    ...WRAPPED_NATIVE_ONLY[ChainId.AVALANCHE]
+    ...WRAPPED_NATIVE_ONLY[ChainId.AVALANCHE],
+    AVALANCHE.WETH,
+    AVALANCHE.WBTC,
+    AVALANCHE.DAI
   ],
   [ChainId.MATIC]: [
     ...WRAPPED_NATIVE_ONLY[ChainId.MATIC]
@@ -219,8 +223,9 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
     FANTOM.WETH,
     FANTOM.BNB,
     FANTOM.LUX,
+    FANTOM.SOR,
     FANTOM.WLUM,
-    FANTOM.MIM,
+    // FANTOM.MIM,
   ],
   [ChainId.BSC]: [
     ...WRAPPED_NATIVE_ONLY[ChainId.BSC],
@@ -239,8 +244,9 @@ export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ],
   [ChainId.AVALANCHE]: [
     ...WRAPPED_NATIVE_ONLY[ChainId.AVALANCHE],
-    AVALANCHE.USDC,
     AVALANCHE.WETH,
+    AVALANCHE.WBTC,
+    AVALANCHE.DAI
   ],
 }
 
