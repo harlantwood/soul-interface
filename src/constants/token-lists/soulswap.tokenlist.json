@@ -23,6 +23,22 @@
         "logoURI": "https://cryptologos.cc/logos/fantom-ftm-logo.svg?v=003"
       },
       {
+        "name": "Dai Stablecoin",
+        "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+        "symbol": "DAI",
+        "decimals": 18,
+        "chainId": 1,
+        "logoURI": "https://raw.githubusercontent.com/SoulSwapFinance/assets/master/blockchains/fantom/assets/0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E/logo.png"
+      },
+      {
+        "name": "Dai Stablecoin",
+        "address": "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+        "symbol": "DAI",
+        "decimals": 18,
+        "chainId": 43114,
+        "logoURI": "https://raw.githubusercontent.com/SoulSwapFinance/assets/master/blockchains/fantom/assets/0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E/logo.png"
+      },
+      {
         "name": "USD Coin",
         "address": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
         "symbol": "USDC",
@@ -55,6 +71,14 @@
         "logoURI": "https://raw.githubusercontent.com/soulswapfinance/assets/prod/blockchains/fantom/assets/0x04068DA6C83AFCFA0e13ba15A6696662335D5B75/logo.png"
       },
       {
+        "name": "Dai Stablecoin",
+        "address": "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+        "symbol": "DAI",
+        "decimals": 18,
+        "chainId": 56,
+        "logoURI": "https://raw.githubusercontent.com/SoulSwapFinance/assets/master/blockchains/fantom/assets/0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E/logo.png"
+      },
+      {
         "name": "Tether USD",
         "address": "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73",
         "symbol": "USDT",
@@ -62,7 +86,7 @@
         "chainId": 40,
         "logoURI": "https://raw.githubusercontent.com/soulswapfinance/assets/prod/blockchains/telos/assets/0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73/logo.png"
       },
-      {
+      { 
         "name": "Fantom USD",
         "address": "0x91ea991bd52EE3C40EdA2509701d905e1Ee54074",
         "symbol": "FUSD",

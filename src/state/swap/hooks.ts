@@ -4,6 +4,7 @@ import {
   ChainId,
   Currency,
   CurrencyAmount,
+  DAI,
   FACTORY_ADDRESS,
   Percent,
   ROUTER_ADDRESS,
