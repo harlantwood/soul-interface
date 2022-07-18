@@ -15,6 +15,11 @@ const config = {
     averageBlockTimeInSeconds: 13,
     underworld: { blacklistedTokens: [], blacklistedOracles: ['0x8f2CC3376078568a04eBC600ae5F0a036DBfd812'] },
   },
+  [ChainId.BSC]: {
+  // todo: verify time
+    averageBlockTimeInSeconds: 3,
+    underworld: { blacklistedTokens: [], blacklistedOracles: [] },
+  },
   [ChainId.TELOS]: {
     averageBlockTimeInSeconds: 0.5,
     underworld: { blacklistedTokens: [], blacklistedOracles: [] },

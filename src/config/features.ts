@@ -44,11 +44,11 @@ const features: FeatureMap = {
     Feature.LIMIT,
     Feature.EXPLORE,
     // Feature.LIMIT_ORDERS,
-    Feature.UNDERWORLD
+    Feature.UNDERWORLD,
   ],
 
   [ChainId.FANTOM_TESTNET]: [
-    Feature.AMM
+    Feature.AMM,
   ],
 }
 
