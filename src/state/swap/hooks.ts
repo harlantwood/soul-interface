@@ -62,7 +62,7 @@ export function useSwapActionHandlers(): {
             : currency.isNative
              && currency.chainId == ChainId.FANTOM
              ? 'FTM'
-            : '' 
+            : '',
         })
       )
     },
