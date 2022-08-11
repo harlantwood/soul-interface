@@ -1,4 +1,4 @@
-import { ChainId } from '@lifi/sdk'
+import { ChainId } from '../constants'
 
 import { deepClone } from '../services/utils'
 

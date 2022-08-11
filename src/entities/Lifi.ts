@@ -29,15 +29,15 @@ import {
   getTokenApproval,
   RevokeApprovalRequest,
   revokeTokenApproval,
-} from './tools/allowance'
-import balances from './balances'
-import { getRpcProvider } from './connectors'
-import { StatusManager } from './execution/StatusManager'
-import { StepExecutor } from './execution/StepExecutor'
-import ApiService from './services/ApiService'
-import ChainsService from './services/ChainsService'
-import ConfigService from './services/ConfigService'
-import { isToken } from './typeguards'
+} from 'features/crosschain/allowance'
+import balances from 'features/crosschain/balances'
+import { getRpcProvider } from 'features/crosschain/connectors'
+import { StatusManager } from 'features/crosschain/execution/StatusManager'
+import { StepExecutor } from 'features/crosschain/execution/StepExecutor'
+import ApiService from 'features/crosschain/services/ApiService'
+import ChainsService from 'features/crosschain/services/ChainsService'
+import ConfigService from 'features/crosschain/services/ConfigService'
+import { isToken } from 'features/crosschain/typeguards'
 import {
   ActiveRouteDictionary,
   Config,
@@ -45,10 +45,10 @@ import {
   ExecutionData,
   ExecutionSettings,
   RevokeTokenData,
-} from './types'
-import { ValidationError } from './utils/errors'
-import { handlePreRestart } from './utils/preRestart'
-import { deepClone } from './utils/utils'
+} from 'features/crosschain/types'
+import { ValidationError } from 'features/crosschain/utils/errors'
+import { handlePreRestart } from 'features/crosschain/utils/preRestart'
+import { deepClone } from 'features/crosschain/utils/utils'
 
 export default class LIFI {
   private activeRouteDictionary: ActiveRouteDictionary = {}

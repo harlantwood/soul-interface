@@ -5,7 +5,6 @@ import { Currency } from 'sdk'
 import NavLink from 'components/NavLink'
 import Settings from 'components/Settings'
 import Typography from 'components/Typography'
-import MyOrders from 'features/limit-order/MyOrders'
 import { useRouter } from 'next/router'
 import { currencyId } from '../../functions'
 import ExternalLink from 'components/ExternalLink'
@@ -30,7 +29,6 @@ const HeaderNew: FC<HeaderNewProps> = ({ inputCurrency, outputCurrency }) => {
   const { asPath } = useRouter()
   const isRemove = asPath.startsWith('/remove')
   const isSwap = asPath.startsWith('/swap') || asPath.startsWith('/add') || asPath.startsWith('/remove')
-  // const isLimitOrder = asPath.startsWith('/limit-order')
 
   return (
     <div className="flex items-center justify-between gap-2">
@@ -83,7 +81,6 @@ const HeaderNew: FC<HeaderNewProps> = ({ inputCurrency, outputCurrency }) => {
           activeClassName="text-dark-600 border border-dark-600 rounded bg-black"
           href={{
             pathname: '/bridge',
-            // query: getQuery(inputCurrency, outputCurrency),
           }}
         >
           <Typography weight={700} className="text-secondary hover:text-purple p-1">

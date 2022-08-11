@@ -1,5 +1,7 @@
+import React from "react"
 const CLASS_NAME = 'metadata'
-const head = document.querySelector('head')
+// TODO: re-enable
+// const head = document.querySelector('head')
 
 function getDefaultValues() {
   // facebook size: 1200 x 630
@@ -22,7 +24,7 @@ function getDefaultValues() {
     },
     tags: {
       'twitter:card': 'summary_large_image',
-      'twitter:site': '@lifiprotocol',
+      'twitter:site': '@soulswapfinance',
     },
     noIndex: false,
     statusCode: 200,
@@ -78,7 +80,7 @@ function updateMetaTags(data: any) {
 }
 
 function addTagsToDOM(nodes: Array<any>) {
-  head?.append(...nodes)
+//   head?.append(...nodes)
 }
 
 function removeAllTagsFromDOM() {

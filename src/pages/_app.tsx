@@ -34,6 +34,7 @@ import { GelatoProvider } from 'soulswap-limit-orders-react'
 import { useActiveWeb3React } from 'services/web3'
 import { ApiDataProvider } from 'contexts/ApiDataProvider'
 import ModalProvider from 'contexts/ModalProvider'
+import { getRpcs } from 'features/crosschain/tools/connectors'
 
 const Web3ProviderNetwork = dynamic(() => import('components/Web3ProviderNetwork'), { ssr: false })
 
@@ -91,6 +92,8 @@ function MyApp({ Component, pageProps, fallback, err }) {
     load(locale)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale])
+
+
 
   // Allows for conditionally setting a provider to be hoisted per page
   const Provider = Component.Provider || Fragment
@@ -161,9 +164,9 @@ function MyApp({ Component, pageProps, fallback, err }) {
                           {/* TODO: Added alert Jan 25. Delete component after a few months. */}
                           {/* <MultichainExploitAlertModal /> */}
                           {/*@ts-ignore TYPE NEEDS FIXING*/}
-                          <Gelato>
-                            <Component {...pageProps} err={err} />
-                          </Gelato>
+                            <Gelato>
+                              <Component {...pageProps} err={err} />
+                            </Gelato>
                         </Guard>
                         <Portals />
                       </Layout>

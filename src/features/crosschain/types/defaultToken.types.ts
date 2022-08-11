@@ -1,7 +1,8 @@
-import { ChainId, ChainKey, CoinKey, findDefaultToken, Token } from '@lifi/sdk'
+// import { Token } from '../constants'
+import { ChainId, findDefaultToken, ChainKey, CoinKey, Token } from '@lifi/types'
 
 export const defaultTokens: { [ChainKey: string]: Array<Token> } = {
-  [ChainKey.ETH]: [
+    [ChainKey.ETH]: [
     findDefaultToken(CoinKey.ETH, ChainId.ETH),
     findDefaultToken(CoinKey.USDC, ChainId.ETH),
     findDefaultToken(CoinKey.USDT, ChainId.ETH),

@@ -1,8 +1,8 @@
-import { Chain, getChainById } from '@lifi/sdk'
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react'
 
-import LiFi from '../LiFi'
-import { TokenAmountList } from '../types'
+import LIFI from 'entities/Lifi'
+import { getChainById, TokenAmountList } from '../types'
+import { Chain } from '../interfaces/EVMChain'
 
 export interface ChainsTokensToolsContextProps {
   chains: Chain[]
@@ -25,6 +25,7 @@ const initialData = {
 }
 
 const chainsTokensToolsContext = createContext<ChainsTokensToolsContextProps>(initialData)
+const lifi = new LIFI()
 
 export const useChainsTokensTools = () => {
   return useContext(chainsTokensToolsContext)
@@ -36,7 +37,7 @@ export const ChainsTokensToolsProvider: React.FC<PropsWithChildren<{}>> = ({ chi
   //get chains
   useEffect(() => {
     const load = async () => {
-      const chains = await LiFi.getChains()
+      const chains = await lifi.getChains()
 
       if (!chains) {
         // eslint-disable-next-line
@@ -53,7 +54,7 @@ export const ChainsTokensToolsProvider: React.FC<PropsWithChildren<{}>> = ({ chi
   //get tokens
   useEffect(() => {
     const load = async () => {
-      const tokens = (await LiFi.getTokens()).tokens
+      const tokens = (await lifi.getTokens()).tokens
       if (!tokens) {
         // eslint-disable-next-line
         console.warn('token request did not contain required setup information')
@@ -85,7 +86,7 @@ export const ChainsTokensToolsProvider: React.FC<PropsWithChildren<{}>> = ({ chi
   //get tools
   useEffect(() => {
     const load = async () => {
-      const tools = await LiFi.getTools()
+      const tools = await lifi.getTools()
       if (!tools.bridges || !tools.exchanges) {
         // eslint-disable-next-line
         console.warn('tools request did not contain required setup information')

@@ -1,8 +1,23 @@
-import { ChainKey, Coin, Route, Step, TokenAmount, TokenWithAmounts } from '@lifi/sdk'
-import { TableColumnType } from 'antd'
+import {
+  CrossStep,
+  LifiStep,
+  Route,
+  RouteOptions,
+  Step,
+  SwapStep,
+  Token,
+} from '@lifi/types'
 import BigNumber from 'bignumber.js'
+import { Signer } from 'ethers'
+import { ChainId } from '.'
+import { ChainKey } from '../constants'
+import { StatusManager } from '../execution/StatusManager'
+import { StepExecutor } from '../execution/StepExecutor'
 
-import { ExtendedTransactionRequest } from '../services/routingService'
+export interface TokenWithAmounts extends Token {
+  amount?: BigNumber
+  amountRendered?: string
+}
 
 export interface TokenAmountList {
   [ChainKey: string]: Array<TokenWithAmounts>
@@ -16,51 +31,101 @@ export interface SwapPageStartParams {
   withdrawToken?: string
 }
 
-export interface Amounts {
-  amount_coin: BigNumber
-  amount_usd: BigNumber
+export type ParsedReceipt = {
+  fromAmount?: string
+  toAmount: string
+  gasUsed: string
+  gasPrice: string
+  gasFee: string
+  toTokenAddress?: string
 }
 
-export interface DataType {
-  [key: string]: string | number | Amounts | Coin // kind of deactivating typing for DataType; last resort?
-  key: React.Key
-  coin: Coin
-  portfolio: Amounts
+interface ExecutionParams {
+  signer: Signer
+  step: Step
+  statusManager: StatusManager
+  settings: InternalExecutionSettings
 }
 
-export function chainKeysToObject(val: any) {
-  const result: { [ChainKey: string]: any } = {}
-  for (const key in ChainKey) {
-    result[key.toLowerCase()] = JSON.parse(JSON.stringify(val))
-  }
-  return result
+export interface ExecuteSwapParams extends ExecutionParams {
+  step: Step
 }
 
-export interface ColomnType extends TableColumnType<DataType> {
-  children?: Array<ColomnType>
+export interface ExecuteCrossParams extends ExecutionParams {
+  // step: CrossStep | LifiStep
+  step: Step
 }
 
-export interface Wallet {
-  address: string
-  loading: boolean
-  portfolio: { [ChainKey: string]: Array<TokenAmount> }
+export type CallbackFunction = (updatedRoute: Route) => void
+
+export type Config = {
+  apiUrl: string
+  rpcs: Record<ChainId, string[]>
+  multicallAddresses: Record<ChainId, string | undefined>
+  defaultExecutionSettings: InternalExecutionSettings
+  defaultRouteOptions: RouteOptions
 }
 
-export enum Currencies {
-  USD = 'usd',
-  EUR = 'eur',
+export type ConfigUpdate = {
+  apiUrl?: string
+  rpcs?: Record<number, string[]>
+  multicallAddresses?: Record<number, string | undefined>
+  defaultExecutionSettings?: ExecutionSettings
+  defaultRouteOptions?: RouteOptions
 }
 
-export interface SummaryAmounts {
-  amount_usd: BigNumber
-  percentage_of_portfolio: BigNumber
+export type SwitchChainHook = (
+  requiredChainId: number
+) => Promise<Signer | undefined>
+
+export interface AcceptSlippageUpdateHookParams {
+  toToken: Token
+  oldToAmount: string
+  newToAmount: string
+  oldSlippage: number
+  newSlippage: number
 }
 
-export interface WalletSummary {
-  wallet: string
-  chains: {
-    [ChainKey: string]: SummaryAmounts
-  }
+export type AcceptSlippageUpdateHook = (
+  params: AcceptSlippageUpdateHookParams
+) => Promise<boolean | undefined>
+
+export interface ExecutionData {
+  route: Route
+  executors: StepExecutor[]
+  settings: InternalExecutionSettings
+}
+
+export interface ExecutionSettings {
+  updateCallback?: CallbackFunction
+  switchChainHook?: SwitchChainHook
+  acceptSlippageUpdateHook?: AcceptSlippageUpdateHook
+  infiniteApproval?: boolean
+}
+
+export interface InternalExecutionSettings extends ExecutionSettings {
+  updateCallback: CallbackFunction
+  switchChainHook: SwitchChainHook
+  acceptSlippageUpdateHook: AcceptSlippageUpdateHook
+  infiniteApproval: boolean
+}
+
+// Hard to read but this creates a new type that enforces all optional properties in a given interface
+export type EnforcedObjectProperties<T> = T & {
+  [P in keyof T]-?: T[P]
+}
+
+export interface ActiveRouteDictionary {
+  [k: string]: ExecutionData
+}
+
+export type RevokeTokenData = {
+  token: Token
+  approvalAddress: string
+}
+
+export interface HaltingSettings {
+  allowUpdates?: boolean
 }
 
 export interface WalletConnectInfo {
@@ -75,17 +140,4 @@ export interface WalletConnectInfo {
   key: string
   peerId: string
   peerMeta: { [k: string]: any } // not important as of now
-}
-
-export interface ExtendedRoute {
-  lifiRoute: Route
-  gasStep: Step
-  stakingStep: Step
-}
-
-export interface ExtendedRouteOptional {
-  lifiRoute?: Route
-  gasStep?: Step
-  stakingStep?: Step
-  simpleTransfer?: ExtendedTransactionRequest
 }
