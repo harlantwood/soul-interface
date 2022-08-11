@@ -204,6 +204,7 @@
     "lightweight-charts": "^3.7.0",
     "luxon": "2.4.0",
     "moment": "^2.29.1",
+    "motion": "^10.13.2",
     "multicodec": "^3.1.0",
     "multihashes": "^4.0.2",
     "next-seo": "^5.1.0",

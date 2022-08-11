@@ -23,7 +23,7 @@ import { Content } from 'antd/lib/layout/layout'
 import Title from 'antd/lib/typography/Title'
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import { createBrowserHistory } from 'history'
+// import { createBrowserHistory } from 'history'
 import QueryString from 'qs'
 import { v4 as uuid } from 'uuid'
 
@@ -62,11 +62,10 @@ import {
 import { Chain } from 'features/crosschain/interfaces/EVMChain'
 import { isSwapStep } from '@lifi/types'
 import { RoutesRequest } from 'features/crosschain/services/routingService'
-import { Router } from 'react-router'
 import { useRouter } from 'next/router'
 // import { RouteList } from './RouteList/Routelist'
 // import SwapForm from './SwapForm/SwapForm'
-// import Swapping from './Swapping'
+import Swapping from 'features/crosschain/components/Swapping'
 // import TransactionsTable from './TransactionsTable'
 // import { WalletConnectChainSwitchModal } from './WalletConnectChainSwitchModal'
 // import ConnectButton from './web3/ConnectButton'
@@ -863,12 +862,12 @@ const Swap = () => {
         minHeight: 'calc(100vh - 64px)',
         marginTop: '64px',
       }}>
-      <div className="swap-view">
+      <div className="flex">
         <Row gutter={[16, 96]} style={{ paddingTop: 48 }} justify="space-around">
-          <Col sm={23} lg={23} xl={10} className="swap-form">
-            <div className="swap-input">
+          <Col sm={23} lg={23} xl={10} className="flex mt-[36px]">
+            <div className="bg-dark-900">
               <Row>
-                <Title className="swap-title" level={4}>
+                <Title className="font-[20px] mt-[20px] mb-[40px]" level={4}>
                   Please Specify Your Transaction
                 </Title>
               </Row>
@@ -1084,7 +1083,7 @@ const Swap = () => {
 
       {selectedRoute && !!selectedRoute.steps.length && (
         <Modal
-          className="swapModal"
+          className="screen max-h-[900px] mt-[92px] mb-[12px]"
           visible={selectedRoute.steps.length > 0}
           onOk={() => {
             lifi.moveExecutionToBackground(selectedRoute)
@@ -1102,7 +1101,7 @@ const Swap = () => {
           destroyOnClose={true}
           width={700}
           footer={null}>
-          {/* <Swapping
+          <Swapping
             route={selectedRoute}
             settings={{
               infiniteApproval: optionInfiniteApproval,
@@ -1116,7 +1115,7 @@ const Swap = () => {
               setActiveRoutes(readActiveRoutes())
               setHistoricalRoutes(readHistoricalRoutes())
               updateBalances()
-            }}></Swapping> */}
+            }}></Swapping>
         </Modal>
       )}
 
