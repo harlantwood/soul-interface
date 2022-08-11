@@ -11,7 +11,6 @@ import {
   Collapse,
   Form,
   InputNumber,
-  Modal,
   Popconfirm,
   Row,
   Select,
@@ -19,6 +18,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd'
+import HeadlessUIModal from 'components/Modal/HeadlessUIModal'
 import { Content } from 'antd/lib/layout/layout'
 import Title from 'antd/lib/typography/Title'
 import BigNumber from 'bignumber.js'
@@ -31,7 +31,7 @@ import { useMetatags } from 'hooks/useMetatags'
 import LIFI from 'entities/Lifi'
 import { useChainsTokensTools } from 'features/crosschain/providers/chainsTokensToolsProvider'
 import {
-  // deleteRoute,
+  deleteRoute,
   isWalletConnectWallet,
   readActiveRoutes,
   readHistoricalRoutes,
@@ -58,17 +58,17 @@ import {
   TokenAmount,
   TokenAmountList
 } from 'features/crosschain/types'
-import { Chain } from 'features/crosschain/interfaces/EVMChain'
+import { Chain } from '@lifi/types'
 import { isSwapStep } from '@lifi/types'
 import { RoutesRequest } from 'features/crosschain/services/routingService'
 import { useRouter } from 'next/router'
-// import { RouteList } from './RouteList/Routelist'
-// import SwapForm from './SwapForm/SwapForm'
+import { RouteList } from 'features/crosschain/components/RouteList/RouteList'
+import SwapForm from 'features/crosschain/components/SwapForm'
 import Swapping from 'features/crosschain/components/Swapping'
-import { deleteRoute } from 'features/crosschain/tools/localStorage'
 import TransactionsTable from 'features/crosschain/components/TransactionsTable'
-// import { WalletConnectChainSwitchModal } from './WalletConnectChainSwitchModal'
-// import ConnectButton from './web3/ConnectButton'
+import { WalletConnectChainSwitchModal } from 'features/crosschain/components/WalletConnectChainSwitchModal'
+import ConnectButton from 'features/crosschain/components/web3/ConnectButton'
+// import { WalletModal } from 'features/crosschain/components/web3/WalletModal'
 
 const TOTAL_SLIPPAGE_GUARD_MODAL = new BigNumber(0.9)
 
@@ -137,7 +137,7 @@ const lifi = new LIFI()
 
 const Swap = () => {
   useMetatags({
-    title: 'LI.FI - Swap',
+    title: 'SoulSwap',
   })
   useStomt('swap')
   const chainsTokensTools = useChainsTokensTools()
@@ -731,7 +731,7 @@ const Swap = () => {
       )
     }
     if (!web3.account) {
-      // return <ConnectButton size={'large'} />
+      return <ConnectButton size={'large'} />
     }
     if (fromChainKey && web3.chainId !== getChainByKey(fromChainKey).id) {
       const fromChain = getChainByKey(fromChainKey)
@@ -873,7 +873,7 @@ const Swap = () => {
               </Row>
 
               <Form>
-                {/* <SwapForm
+                <SwapForm
                   depositChain={fromChainKey}
                   setDepositChain={setFromChainKey}
                   depositToken={fromTokenAddress}
@@ -892,7 +892,7 @@ const Swap = () => {
                   tokens={tokens}
                   balances={balances}
                   allowSameChains={true}
-                /> */}
+                />
                 <span>
                   {/* Bridge Prio */}
                   <Row justify="center" style={{ marginTop: 16 }}>
@@ -915,12 +915,16 @@ const Swap = () => {
                       </Select>
                     </Form.Item>
                   </Row>
-                  {/* Disclaimer
-                  <Row style={{ marginTop }} justify={'center'} className="beta-disclaimer">
+                  Disclaimer
+                  <Row 
+                    style={{ marginTop: '1px' }} 
+                    justify={'center'} 
+                    className="mt-[24px]"
+                  >
                     <Typography.Text type="danger" style={{ textAlign: 'center' }}>
                       Beta product - use at own risk.
                     </Typography.Text>
-                  </Row> */}
+                  </Row>
                   <Row style={{ marginTop: 24 }} justify={'center'}>
                     {submitButton()}
                   </Row>
@@ -955,7 +959,7 @@ const Swap = () => {
                             max={100}
                             formatter={(value) => `${value}%`}
                             parser={(value) => parseFloat(value ? value.replace('%', '') : '')}
-                            // onChange={setOptionSlippage}
+                            onChange={async () => await setOptionSlippage}
                             style={{
                               border: '1px solid #d9d9d9',
                               width: '100%',
@@ -1022,7 +1026,7 @@ const Swap = () => {
                 activeKey={activeTransactionInfoTabKey}
                 onTabClick={(key: string) => setActiveTransactionInfoTabKey(key)}>
                 <TabPane tab={`Available Routes (${routes.length})`} key="1">
-                  {/* {routesLoading || noRoutesAvailable || routes.length ? (
+                  {routesLoading || noRoutesAvailable || routes.length ? (
                     <RouteList
                       highlightedIndex={highlightedIndex}
                       routes={routes}
@@ -1036,7 +1040,7 @@ const Swap = () => {
                         To get available routes, input your desired tokens to swap.
                       </Typography.Title>
                     </Row>
-                  )} */}
+                  )}
                 </TabPane>
 
                 <TabPane
@@ -1062,7 +1066,7 @@ const Swap = () => {
                   disabled={!historicalRoutes.length}
                   key="3"
                   style={{ overflowX: 'scroll' }}>
-                  {/* {!!historicalRoutes.length && (
+                  {!!historicalRoutes.length && (
                     <TransactionsTable
                       routes={historicalRoutes}
                       selectRoute={() => {}}
@@ -1073,7 +1077,7 @@ const Swap = () => {
                       }}
                       historical={true}
                     />
-                  )} */}
+                  )}
                 </TabPane>
               </Tabs>
             </div>
@@ -1082,25 +1086,26 @@ const Swap = () => {
       </div>
 
       {selectedRoute && !!selectedRoute.steps.length && (
-        <Modal
-          className="screen max-h-[900px] mt-[92px] mb-[12px]"
-          visible={selectedRoute.steps.length > 0}
-          onOk={() => {
-            lifi.moveExecutionToBackground(selectedRoute)
-            resetForegroundRoute()
-            setSelectedRoute(undefined)
-            updateBalances()
-          }}
-          onCancel={() => {
-            lifi.moveExecutionToBackground(selectedRoute)
-            resetForegroundRoute()
+        <HeadlessUIModal
+          // className="screen max-h-[900px] mt-[92px] mb-[12px]"
+          // visible={selectedRoute.steps.length > 0}
+          // onOk={() => {
+          //   lifi.moveExecutionToBackground(selectedRoute)
+          //   resetForegroundRoute()
+          //   setSelectedRoute(undefined)
+          //   updateBalances()
+          // }}
+          // onCancel={() => {
+          //   lifi.moveExecutionToBackground(selectedRoute)
+          //   resetForegroundRoute()
 
-            setSelectedRoute(undefined)
-            updateBalances()
-          }}
-          destroyOnClose={true}
-          width={700}
-          footer={null}>
+          //   setSelectedRoute(undefined)
+          //   updateBalances()
+          // }}
+          // destroyOnClose={true}
+          // width={700}
+          // footer={null}
+          >
           <Swapping
             route={selectedRoute}
             settings={{
@@ -1116,22 +1121,23 @@ const Swap = () => {
               setHistoricalRoutes(readHistoricalRoutes())
               updateBalances()
             }}></Swapping>
-        </Modal>
+        </HeadlessUIModal>
       )}
 
-      <Modal
-        className="wallet-selection-modal"
-        visible={showWalletConnectChainSwitchModal.show}
-        onOk={() => setShowWalletConnectChainSwitchModal({ show: false, chainId: 1 })}
-        onCancel={() => setShowWalletConnectChainSwitchModal({ show: false, chainId: 1 })}
-        footer={null}>
-        {/* <WalletConnectChainSwitchModal
+      <HeadlessUIModal
+        // className="wallet-selection-modal"
+        // visible={showWalletConnectChainSwitchModal.show}
+        // onOk={() => setShowWalletConnectChainSwitchModal({ show: false, chainId: 1 })}
+        // onCancel={() => setShowWalletConnectChainSwitchModal({ show: false, chainId: 1 })}
+        // footer={null}
+        >
+        <WalletConnectChainSwitchModal
           chainId={showWalletConnectChainSwitchModal.chainId}
           okHandler={() => {
             setShowWalletConnectChainSwitchModal({ show: false, chainId: 1 })
           }}
-        /> */}
-      </Modal>
+        />
+      </HeadlessUIModal>
     </Content>
   )
 }

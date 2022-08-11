@@ -80,6 +80,7 @@ function DisconnectButton({ style, className, size = 'middle' }: DisconnectButto
       <Image width={300} 
         src={metamaskGif} 
         style={{ display: 'block' }} 
+        alt={'metamask gif'}
         />
       <br />
       <Checkbox onChange={handleHideDisconnectPopup} style={{ margin: '16px 0 16px 0' }}>
