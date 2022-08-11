@@ -58,7 +58,6 @@ import {
   TokenAmount,
   TokenAmountList
 } from 'features/crosschain/types'
-// import  from 'constants/crosschain/chainKey'
 import { Chain } from 'features/crosschain/interfaces/EVMChain'
 import { isSwapStep } from '@lifi/types'
 import { RoutesRequest } from 'features/crosschain/services/routingService'
@@ -66,7 +65,8 @@ import { useRouter } from 'next/router'
 // import { RouteList } from './RouteList/Routelist'
 // import SwapForm from './SwapForm/SwapForm'
 import Swapping from 'features/crosschain/components/Swapping'
-// import TransactionsTable from './TransactionsTable'
+import { deleteRoute } from 'features/crosschain/tools/localStorage'
+import TransactionsTable from 'features/crosschain/components/TransactionsTable'
 // import { WalletConnectChainSwitchModal } from './WalletConnectChainSwitchModal'
 // import ConnectButton from './web3/ConnectButton'
 
@@ -1044,7 +1044,7 @@ const Swap = () => {
                   disabled={!activeRoutes.length}
                   key="2"
                   style={{ overflowX: 'scroll' }}>
-                  {/* {!!activeRoutes.length && (
+                  {!!activeRoutes.length && (
                     <TransactionsTable
                       routes={activeRoutes}
                       selectRoute={(route: RouteType) => setSelectedRoute(route)}
@@ -1054,7 +1054,7 @@ const Swap = () => {
                         setActiveRoutes(readActiveRoutes())
                       }}
                     />
-                  )} */}
+                  )}
                 </TabPane>
 
                 <TabPane

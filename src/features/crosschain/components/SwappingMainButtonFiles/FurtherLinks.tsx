@@ -1,8 +1,8 @@
-import { Route } from '@lifi/sdk'
 import { Button } from 'antd'
 import { Link } from 'react-router-dom'
 
 import { stepReturnInfo } from 'hooks/useStepReturnInfo'
+import { Route } from 'features/crosschain/types'
 
 interface FurtherLinksProps {
   fixedRecipient?: boolean
@@ -39,7 +39,6 @@ export const FurtherLinks = ({
             const link = receivedAnyToken
               ? `https://multichain.zendesk.com/hc/en-us/articles/4410379722639`
               : `https://transferto.xyz/swap?fromChain=${routeReturnInfo?.receivedToken.chainId}&fromToken=${routeReturnInfo?.receivedToken.address}&toChain=${localRoute?.toChainId}&toToken=${localRoute?.toToken.address}`
-            // eslint-disable-next-line security/detect-non-literal-fs-filename
             window.open(link, '_blank')
           }}>
           Swap to your desired token

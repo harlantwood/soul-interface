@@ -1,10 +1,11 @@
 import { Web3Provider } from '@ethersproject/providers'
-import { Chain, getChainById, Step, Token, TokenAmount } from '@lifi/sdk'
 import { useWeb3React } from '@web3-react/core'
 import BigNumber from 'bignumber.js'
 import { useCallback, useEffect, useState } from 'react'
 
 import LIFI from 'entities/Lifi'
+import { Token } from 'features/crosschain/constants'
+import { Chain, getChainById, Step, TokenAmount } from 'features/crosschain/types'
 
 const lifi = new LIFI()
 

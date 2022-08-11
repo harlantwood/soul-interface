@@ -5,7 +5,7 @@ import {
     PauseCircleOutlined,
   } from '@ant-design/icons'
   import { Web3Provider } from '@ethersproject/providers'
-  import { AcceptSlippageUpdateHookParams, ExecutionSettings, StatusMessage, Token } from '@lifi/sdk'
+//   import { AcceptSlippageUpdateHookParams, ExecutionSettings, StatusMessage, Token } from '@lifi/types'
   import { useWeb3React } from '@web3-react/core'
   import { Button, Divider, Modal, Row, Space, Timeline, Tooltip, Typography } from 'antd'
   import { constants } from 'ethers'
@@ -27,7 +27,7 @@ import {
     renderSubstatusmessage,
   } from '../services/processRenderer'
   import { copyToClipboard, formatTokenAmount, parseSecondsAsTime } from '../services/utils'
-  import { getChainById, isCrossStep, isLifiStep, Route, Step } from '../types'
+  import { AcceptSlippageUpdateHookParams, ExecutionSettings, getChainById, isCrossStep, isLifiStep, Route, StatusMessage, Step, Token } from '../types'
   import { getChainAvatar, getToolAvatar } from './Avatars'
   import Clock from './Clock'
   import LoadingIndicator from './LoadingIndicator'

@@ -1,8 +1,8 @@
-import { findDefaultToken, getChainById } from '@lifi/sdk'
 import { useWeb3React } from '@web3-react/core'
 import { Button, Typography } from 'antd'
 
 import { readWalletConnectInfo } from '../services/localStorage'
+import { findDefaultToken, getChainById } from '../types'
 
 interface Props {
   chainId: number
@@ -20,7 +20,7 @@ export function WalletConnectChainSwitchModal({ chainId, okHandler }: Props) {
       </Typography.Title>
       <Typography.Paragraph>
         Please switch the chain in your connected wallet. You can use the following information to
-        manually add it to your wallet, if it's not configured already.
+        manually add it to your wallet, if it is not configured already.
       </Typography.Paragraph>
       <Typography.Paragraph style={{ padding: 16, overflowX: 'scroll' }}>
         Network Name: {chain.name}
@@ -36,7 +36,7 @@ export function WalletConnectChainSwitchModal({ chainId, okHandler }: Props) {
       <Typography.Paragraph>
         For more information, please visit{' '}
         <a href={walletConnectInfo?.peerMeta.url} target="_blank" rel="noreferrer">
-          your wallet provider's website
+          the website of your wallet provider.
         </a>
       </Typography.Paragraph>
       <Button

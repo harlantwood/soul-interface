@@ -183,6 +183,7 @@
     "@uniswap/redux-multicall": "^1.1.5",
     "@visx/event": "^2.6.0",
     "@walletconnect/web3-provider": "^1.7.8",
+    "@web3-react/network-connector": "^6.1.9",
     "antd": "^4.22.3",
     "assert.js": "^0.5.0",
     "autoprefixer": "^10.0.2",

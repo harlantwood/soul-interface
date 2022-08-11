@@ -1,4 +1,4 @@
-import { ChainKey, getChainByKey, Step, Token } from '@lifi/sdk'
+import { ChainKey, getChainByKey, Step, Token } from '@lifi/types'
 import { Avatar, Tooltip } from 'antd'
 
 import lifiLogo from 'assets/icons/LiFi.svg'
