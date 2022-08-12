@@ -8,7 +8,6 @@ import SDK, {
   InsufficientFundsError,
   CrossChainTrade,
   InsufficientLiquidityError,
-  RubicSdkError,
 } from "rubik-sdk";
 import { sleep } from "utils/sleep";
 import { ArrowDownIcon, ArrowRightIcon } from '@heroicons/react/solid'
@@ -20,7 +19,7 @@ import { useUserInfo, useUserTokenInfo } from "hooks/useAPI";
 import { Button } from "components/Button";
 import { useNetworkModalToggle, useWalletModalToggle } from "state/application/hooks";
 import { OverlayButton } from "components/index";
-import useSendTransaction from "hooks/useSendTransaction"
+// import useSendTransaction from "hooks/useSendTransaction"
 import Typography from "components/Typography";
 import { formatNumber } from "functions/format";
 import { classNames } from "functions/styling";
@@ -119,8 +118,8 @@ export default function Exchange() {
   const [trade, setTrade] = useState<InstantTrade | CrossChainTrade | undefined>(undefined);
   const [canBuy, setCanBuy] = useState(true);
   const [loading, setLoading] = useState(false);
-  const toggleWalletModal = useWalletModalToggle()
-  const { approve, getAllowance } = useFantomERC20()
+  // const toggleWalletModal = useWalletModalToggle()
+  // const { approve, getAllowance } = useFantomERC20()
   const [configuration, setConfiguration] = useState(rubicConfiguration);
   const [rubic, setRubic] = useState<SDK>(null);
   useEffect(() => {
@@ -264,22 +263,23 @@ export default function Exchange() {
               )
               .then((trades: InstantTrade[]): InstantTrade => trades[0])
               
-            : rubic.crossChain.calculateTrade(
-            // (1) fromToken
-              {
-              address: from.isNative ? NATIVE_ADDRESS : from.address,
-              blockchain: RUBIC_CHAIN_BY_ID.get(fromChain.chainId),
-              },
-              // (2) fromAmount
-              amount,
-              // (3) toToken
-              {
-              address: to?.isNative ? NATIVE_ADDRESS : to?.address,
-              blockchain: RUBIC_CHAIN_BY_ID.get(toChain?.chainId),
-              },
-              // (4) options (optional)
-            )
-            // .then((trades: CrossChainTrade[]): CrossChainTrade => trades[0])
+            : rubic.crossChain
+              .calculateTrade(
+              // (1) fromToken
+                {
+                address: from.isNative ? NATIVE_ADDRESS : from.address,
+                blockchain: RUBIC_CHAIN_BY_ID.get(fromChain.chainId),
+                },
+                // (2) fromAmount
+                amount,
+                // (3) toToken
+                {
+                address: to?.isNative ? NATIVE_ADDRESS : to?.address,
+                blockchain: RUBIC_CHAIN_BY_ID.get(toChain?.chainId),
+                },
+                // (4) options (optional)
+              )
+              .then((trades: CrossChainTrade[]): CrossChainTrade => trades[1])
 
         const newTrade = await tradeRequest;
         const [newFromUsd, newToUsd] = await Promise.all([
@@ -320,8 +320,8 @@ export default function Exchange() {
       }
     }
     setTrade(undefined);
-    setFromUsd(undefined);
-    setToUsd(undefined);
+    // setFromUsd(undefined);
+    // setToUsd(undefined);
     setCanBuy(true);
 
     const isTradingSameToken = fromChain.chainId === toChain?.chainId && from.id === to?.id;
@@ -341,8 +341,8 @@ export default function Exchange() {
   }, [from, fromChain, to, toChain]);
 
   const [showConfirmation, setShowConfirmation] = useState<"hide" | "show" | "poor">("hide");
-  const [showFromChainSelect, setShowFromChainSelect] = useState(false);
-  const [showToChainSelect, setShowToChainSelect] = useState(false);
+  // const [showFromChainSelect, setShowFromChainSelect] = useState(false);
+  // const [showToChainSelect, setShowToChainSelect] = useState(false);
   const [showSelectFrom, setShowSelectFrom] = useState(false);
   const [showSelectTo, setShowSelectTo] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -421,9 +421,17 @@ export default function Exchange() {
             async () => {
               setShowConfirmation("show")
               try {
+              // if CrossChainTrade
+              if (isCrossChainTrade) {
+                await trade[0]?.swap({
+                  onConfirm: (_hash: any) => setShowConfirmation("hide"),
+                })
+              } else {
+                // if InstantTrade
                 await trade?.swap({
                   onConfirm: (_hash: any) => setShowConfirmation("hide"),
-                });
+                })
+              }
               } catch (e) {
                 if (e instanceof InsufficientFundsError) {
                   setShowConfirmation("poor");
@@ -530,7 +538,9 @@ export default function Exchange() {
                     <div className="flex justify-center">
                       <Typography className={classNames('text-lg font-bold', 'text-white')} weight={600} fontFamily={'semi-bold'}>
                         {trade
-                          ? `${formatNumber(Number(trade?.from.tokenAmount), false, true)} ${from.symbol} (${formatNumber(fromUsd, true, true)}) `
+                          ? `
+                          ${formatNumber(Number(amount), false, true)}
+                            ${from.symbol} (${formatNumber(fromUsd, true, true)})`
                           : "0 ($0.00)"}
                       </Typography>
                     </div>
@@ -542,7 +552,7 @@ export default function Exchange() {
                   <InputCurrencyBox
                     disabled={!from}
                     value={amount}
-                    setValue={async (amount) => await setAmount(amount)}
+                    setValue={async () => await setAmount(amount)}
                     // max={async () => setAmount(ethers.utils.formatUnits(await getBalance(), decimals))}
                     variant="new"
                   />
@@ -725,19 +735,19 @@ export default function Exchange() {
 }
 
 interface TradeDetailProps {
+  isCrossChain?: boolean
   trade?: InstantTrade | CrossChainTrade;
 }
-function isCrossChainTrade(trade: InstantTrade | CrossChainTrade): trade is CrossChainTrade {
+function isCrossChainTrade(trade): trade is CrossChainTrade {
   return "transitFeeToken" in trade;
 }
-const TradeDetail: FC<TradeDetailProps> = ({ trade }) => {
+const TradeDetail: FC<TradeDetailProps> = ({ isCrossChain, trade }) => {
   let min: string;
-  if (trade) {
-    if (isCrossChainTrade(trade)) {
+  if (isCrossChain) {
+    if (isCrossChainTrade(isCrossChain)) {
       min = `${formatNumber(Number(trade.toTokenAmountMin), false, true)} ${trade.to?.symbol}`;
     } else {
-      // @ts-ignore
-      min = `${formatNumber(Number(trade.toTokenAmountMin.tokenAmount), false, true)} ${trade.to?.symbol}`;
+      min = `${formatNumber(Number(trade.toTokenAmountMin), false, true)} ${trade.to?.symbol}`;
     }
   }
 

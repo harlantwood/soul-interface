@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Flashbots = () => {
+const mev = () => {
 let screenHeight = screen.height
 const frameHeight = `${screenHeight - 132}px`
 console.log('screenHeight:%s', screenHeight)
@@ -17,4 +17,4 @@ return (
 	)
 }
 
-export default Flashbots;
+export default mev;

@@ -50,6 +50,18 @@ export const STOP_LIMIT_ORDER_ADDRESS: AddressMap = {
   [ChainId.FANTOM]: '0x6AaC28444cB227EC5D5cebe696882DeCcD50ee83', // FEB22
 }
 
+export const LIFI_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.ETHEREUM]: '0x362fA9D0bCa5D19f743Db50738345ce2b40eC99f',
+  [ChainId.TELOS]: '',
+  [ChainId.BSC]: '0x362fA9D0bCa5D19f743Db50738345ce2b40eC99f',
+  [ChainId.FANTOM]: '0x362fA9D0bCa5D19f743Db50738345ce2b40eC99f',
+  [ChainId.FANTOM_TESTNET]: '',
+  [ChainId.AVALANCHE]: '0x362fA9D0bCa5D19f743Db50738345ce2b40eC99f',
+  [ChainId.MATIC]: '0x362fA9D0bCa5D19f743Db50738345ce2b40eC99f',
+  [ChainId.MOONRIVER]: '0x362fA9D0bCa5D19f743Db50738345ce2b40eC99f',
+  [ChainId.ARBITRUM]: '0x362fA9D0bCa5D19f743Db50738345ce2b40eC99f',
+}
+
 export const SOUL_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.ETHEREUM]: '',
   [ChainId.TELOS]: '0xef9777827a3581b64f5c7CB8954ccaE3cc2c46C0',
