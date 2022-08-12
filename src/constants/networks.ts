@@ -1,7 +1,7 @@
 import { ChainId, WNATIVE_ADDRESS } from '../sdk'
 
 const Fantom = 'https://cryptologos.cc/logos/fantom-ftm-logo.svg'
-const Mainnet = 'https://cryptologos.cc/logos/ethereum-eth-logo.svg'
+const Ethereum = 'https://cryptologos.cc/logos/ethereum-eth-logo.svg'
 const Telos = '/images/networks/Telos.jpg'
 const Bsc = 'https://cryptologos.cc/logos/bnb-bnb-logo.svg'
 
@@ -22,7 +22,7 @@ const Polygon = '/images/networks/polygon-network.jpg'
 // const Celo = '/images/networks/celo-network.jpg'
 
 export const NETWORK_ICON = {
-  [ChainId.ETHEREUM]: Mainnet,
+  [ChainId.ETHEREUM]: Ethereum,
   [ChainId.TELOS]: Telos,
   [ChainId.BSC]: Bsc,
   [ChainId.FANTOM]: Fantom,
@@ -83,6 +83,7 @@ export const NATIVE_TOKEN_TICKER = {
   [ChainId.BSC]: 'BNB',
   [ChainId.FANTOM]: 'FTM',
   [ChainId.AVALANCHE]: 'AVAX',
+  [ChainId.MATIC]: 'MATIC',
   [ChainId.MOONRIVER]: 'MOVR',
 }
 
@@ -91,6 +92,7 @@ export const NATIVE_WRAPPED_TOKEN_ADDRESS = {
   [ChainId.BSC]: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
   [ChainId.TELOS]: WNATIVE_ADDRESS[40],
   [ChainId.FANTOM]: WNATIVE_ADDRESS[250],
+  [ChainId.MATIC]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
   [ChainId.AVALANCHE]: WNATIVE_ADDRESS[43114],
   [ChainId.MOONRIVER]: WNATIVE_ADDRESS[1285],
 }
