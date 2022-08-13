@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 // import { ethers, Signer } from 'ethers';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import './index.css';
+// import './index.css';
 // import {
 //   addChain,
 //   switchChain,
