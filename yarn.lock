@@ -25704,6 +25704,11 @@ web-namespaces@^1.0.0:
   resolved "https://registry.yarnpkg.com/web-namespaces/-/web-namespaces-1.1.4.tgz#bc98a3de60dadd7faefc403d1076d529f5e030ec"
   integrity sha512-wYxSGajtmoP4WxfejAPIr4l0fVh+jeMXZb08wNc0tMg6xsfZXj3cECqIK0G7ZAqUq0PP8WlMDtaOGVBTAWztNw==
 
+web-vitals@^3.0.0-rc.0:
+  version "3.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/web-vitals/-/web-vitals-3.0.0-rc.0.tgz#7cc659576f1659a5257338efc23960ac8183a633"
+  integrity sha512-GHS5aiK2r9oQ8V0xf4avZU2dzCTP3osAWa/9jBzxzrvHKPu0IxuuntNWpg1E4Ytu8HAj2lZM+7qj+SjsaL2ZHA==
+
 web3-bzz@1.2.11:
   version "1.2.11"
   resolved "https://registry.yarnpkg.com/web3-bzz/-/web3-bzz-1.2.11.tgz#41bc19a77444bd5365744596d778b811880f707f"

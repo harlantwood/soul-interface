@@ -25,7 +25,7 @@ import './index.css';
 //   switchChainAndAddToken,
 // } from '@lifi/wallet-management';
 // import { Token } from '@lifi/sdk';
-import { reportWebVitals } from './reportWebVitals';
+// import { reportWebVitals } from './reportWebVitals';
 
 function ValueLabelComponent({
   children,
@@ -426,5 +426,5 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 if (process.env.NODE_ENV === 'development') {
-  reportWebVitals(console.log);
+//   reportWebVitals(console.log);
 }

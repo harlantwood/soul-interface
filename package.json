@@ -245,6 +245,7 @@
     "soulswap-limit-orders-react": "^3.9.0",
     "tiny-invariant": "^1.1.0",
     "toformat": "^2.0.0",
+    "web-vitals": "^3.0.0-rc.0",
     "web3": "^1.7.0",
     "web3-eth-abi": "^1.7.0",
     "yup": "^0.32.11"
