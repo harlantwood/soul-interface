@@ -6,7 +6,7 @@ const Lifi = () => {
       <iframe 
 			frameBorder={"none"}
     		title={"Lifi"}
-    		src="https://transferto.xyz/embed"
+    		src="https://lifinance-widget.vercel.app"
     		height={"900px"}
     		width={"100%"}
     />
