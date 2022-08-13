@@ -49,7 +49,7 @@ export const INIT_VERSION = VERSION.V5
 // export const INIT_VERSION = VERSION.V6_1
 // export const INIT_VERSION = VERSION.V7
 
-function getUrlVersion (init:any) {
+export function getUrlVersion (init:any) {
   const url = window.location.href
   let version:any
   if (url.indexOf('https://stable.anyswap.exchange') === 0) {
