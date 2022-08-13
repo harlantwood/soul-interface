@@ -1,10 +1,10 @@
-import {formatSwapTokenList, getLocalRPC} from './methods'
-import { tokenListUrl, VERSION, USE_VERSION } from 'constants/bridges'
+import {formatSwapTokenList} from './methods'
+import { tokenListUrl, VERSION, CROSS_INIT_VERSION} from 'constants/bridges'
 
 export const MATIC_MAIN_CHAINID = 137
 // export const MATIC_MAINNET = 'https://rpc-mainnet.maticvigil.com'
 // export const MATIC_MAINNET = process.env.NODE_ENV === 'development' ? 'https://rpc-mainnet.maticvigil.com' : 'https://maticnode1.anyswap.exchange'
-export const MATIC_MAINNET = process.env.NODE_ENV === 'development' ? getLocalRPC(MATIC_MAIN_CHAINID, 'https://rpc-mainnet.matic.network') : getLocalRPC(MATIC_MAIN_CHAINID, 'https://maticnode1.anyswap.exchange')
+export const MATIC_MAINNET = process.env.NODE_ENV === 'development' ? 'https://rpc-mainnet.matic.network' : 'https://maticnode1.anyswap.exchange'
 // export const MATIC_MAIN_EXPLORER = 'https://explorer-mainnet.maticvigil.com'
 export const MATIC_MAIN_EXPLORER = 'https://polygonscan.com'
 // console.log(MATIC_MAINNET)
@@ -69,7 +69,7 @@ export default {
   [MATIC_MAIN_CHAINID]: {
     tokenListUrl: tokenListUrl + MATIC_MAIN_CHAINID,
     tokenList: formatSwapTokenList(symbol, tokenList),
-    ...bridgeToken[USE_VERSION],
+    ...bridgeToken[CROSS_INIT_VERSION],
     swapRouterToken: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
     swapInitToken: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
     // multicalToken: '0x95028E5B8a734bb7E2071F96De89BABe75be9C8E',

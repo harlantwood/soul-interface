@@ -569,7 +569,7 @@ const BalancePromiseToUnit: React.FC<any> = ({ promise, decimals }) => {
   );
 };
 
-const BridgeTokenList: React.FC<any> = ({
+export const BridgeTokenList: React.FC<any> = ({
   tokenList,
   fromChain,
   toChain,

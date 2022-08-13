@@ -1,8 +1,8 @@
-import {formatSwapTokenList, getLocalRPC} from './methods'
-import { tokenListUrl, VERSION, USE_VERSION } from 'constants/bridges'
+import {formatSwapTokenList} from './methods'
+import { tokenListUrl, VERSION, CROSS_INIT_VERSION} from 'constants/bridges'
 
 export const MOVR_MAIN_CHAINID = 1285
-export const MOVR_MAINNET = getLocalRPC(MOVR_MAIN_CHAINID, 'https://rpc.moonriver.moonbeam.network')
+export const MOVR_MAINNET = 'https://rpc.moonriver.moonbeam.network'
 export const MOVR_MAIN_EXPLORER = 'https://moonriver.moonscan.io'
 
 export const tokenList = []
@@ -43,7 +43,7 @@ export default {
   [MOVR_MAIN_CHAINID]: {
     tokenListUrl: tokenListUrl + MOVR_MAIN_CHAINID,
     tokenList: formatSwapTokenList(symbol, tokenList),
-    ...bridgeToken[USE_VERSION],
+    ...bridgeToken[CROSS_INIT_VERSION],
     swapRouterToken: '',
     swapInitToken: '',
     // multicalToken: '0x2c78f1b70ccf63cdee49f9233e9faa99d43aa07e',

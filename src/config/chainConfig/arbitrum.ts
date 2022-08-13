@@ -1,12 +1,12 @@
-import {formatSwapTokenList, getLocalRPC} from './methods'
-import { tokenListUrl, VERSION, USE_VERSION } from 'constants/bridges'
+import {formatSwapTokenList} from './methods'
+import { tokenListUrl, VERSION, CROSS_INIT_VERSION} from 'constants/bridges'
 
 export const ARBITRUM_MAIN_CHAINID = 42161
-export const ARBITRUM_MAINNET = getLocalRPC(ARBITRUM_MAIN_CHAINID, 'https://arb1.arbitrum.io/rpc')
+export const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc'
 export const ARBITRUM_MAIN_EXPLORER = 'https://arbiscan.io/'
 
 export const ARBITRUM_TEST_CHAINID = 421611
-export const ARBITRUM_TESTNET = getLocalRPC(ARBITRUM_TEST_CHAINID, 'https://rinkeby.arbitrum.io/rpc')
+export const ARBITRUM_TESTNET = 'https://rinkeby.arbitrum.io/rpc'
 export const ARBITRUM_TEST_EXPLORER = 'https://rinkeby-explorer.arbitrum.io/#'
 
 export const tokenList = []
@@ -53,7 +53,7 @@ export default {
   [ARBITRUM_MAIN_CHAINID]: {
     tokenListUrl: tokenListUrl + ARBITRUM_MAIN_CHAINID,
     tokenList: formatSwapTokenList(symbol, tokenList),
-    ...bridgeToken[USE_VERSION],
+    ...bridgeToken[CROSS_INIT_VERSION],
     swapRouterToken: '',
     swapInitToken: '',
     // multicalToken: '0x9e73d56dd1942743ffdf055449b052a806b854be',
@@ -83,7 +83,7 @@ export default {
   [ARBITRUM_TEST_CHAINID]: {
     tokenListUrl: tokenListUrl + ARBITRUM_TEST_CHAINID,
     tokenList: formatSwapTokenList(symbol, tokenList),
-    ...bridgeToken[USE_VERSION],
+    ...bridgeToken[CROSS_INIT_VERSION],
     swapRouterToken: '',
     swapInitToken: '',
     multicalToken: '0xf27ee99622c3c9b264583dacb2cce056e194494f',

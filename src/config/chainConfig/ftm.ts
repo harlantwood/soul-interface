@@ -1,12 +1,12 @@
-import {formatSwapTokenList, getLocalRPC} from './methods'
-import {tokenListUrl, VERSION, USE_VERSION, BASECURRENCY} from 'constants/bridges'
+import {formatSwapTokenList} from './methods'
+import {tokenListUrl, VERSION, BASECURRENCY, CROSS_INIT_VERSION} from 'constants/bridges'
 
 export const FTM_MAIN_CHAINID = 250
 // const useNode = 'https://rpc.fantom.network'
 // const useNode = 'https://rpc2.fantom.network'
 const useNode = 'https://rpc3.fantom.network'
 // const useNode = 'https://rpcapi.fantom.network'
-export const FTM_MAINNET = process.env.NODE_ENV === 'development' ? getLocalRPC(FTM_MAIN_CHAINID, useNode) : getLocalRPC(FTM_MAIN_CHAINID, 'https://ftmnode1.anyswap.exchange')
+export const FTM_MAINNET = process.env.NODE_ENV === 'development' ? useNode : 'https://ftmnode1.anyswap.exchange'
 export const FTM_MAIN_EXPLORER = 'https://ftmscan.com'
 
 export const tokenList = [
@@ -69,7 +69,7 @@ export default {
   [FTM_MAIN_CHAINID]: {
     tokenListUrl: tokenListUrl + FTM_MAIN_CHAINID,
     tokenList: formatSwapTokenList(symbol, tokenList),
-    ...bridgeToken[USE_VERSION],
+    ...bridgeToken[CROSS_INIT_VERSION],
     swapRouterToken: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
     swapInitToken: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
     // multicalToken: '0x63B8310c5093ac917552931D8b15d5AB6945c0a6',

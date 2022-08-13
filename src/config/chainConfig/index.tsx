@@ -7,7 +7,7 @@ import ftm, {FTM_MAIN_CHAINID} from './ftm'
 import matic, {MATIC_MAIN_CHAINID} from './matic'
 import movr, {MOVR_MAIN_CHAINID} from './movr'
 import tlos, {TLOS_MAIN_CHAINID} from './tlos'
-import { env, USE_VERSION, VERSION } from 'constants/bridges'
+import { env, CROSS_INIT_VERSION, VERSION } from 'constants/bridges'
 
 // import {VERSION, USE_VERSION, env} from 'config/bridges/constants'
 
@@ -163,4 +163,4 @@ const useChain:any = {
 }
 
 const envType:any = env
-export const spportChainArr = envType === 'dev' ? useChain['ALL_MAIN'] : useChain[USE_VERSION]
+export const spportChainArr = envType === 'dev' ? useChain['ALL_MAIN'] : useChain[CROSS_INIT_VERSION]

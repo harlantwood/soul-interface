@@ -1,5 +1,5 @@
 import {
-    USE_VERSION
+    CROSS_INIT_VERSION, tokenListUrl
   } from 'constants/bridges'
   
   export function formatSwapTokenList (name, tokenlist) {
@@ -21,22 +21,23 @@ import {
   }
   
   const LOCAL_RPC = 'LOCAL_RPC'
-  export function getLocalRPC (chainId, initRpc) {
-    const lStr = localStorage.getItem(USE_VERSION + '_' + LOCAL_RPC)
-    if (lStr) {
-      const lObj = JSON.parse(lStr)
-      if (lObj[chainId]) {
-        return lObj[chainId]
-      } else {
-        return initRpc
-      }
-    } else {
-      return initRpc
-    }
-  }
+  // export function getLocalRPC (chainId, initRpc) {
+  //   // const lStr = localStorage.getItem(CROSS_INIT_VERSION + '_' + LOCAL_RPC)
+  //   const lStr = tokenListUrl
+  //   if (lStr) {
+  //     const lObj = JSON.parse(lStr)
+  //     if (lObj[chainId]) {
+  //       return lObj[chainId]
+  //     } else {
+  //       return initRpc
+  //     }
+  //   } else {
+  //     return initRpc
+  //   }
+  // }
   
   export function setLocalRPC (chainId, initRpc) {
-    const lStr = localStorage.getItem(USE_VERSION + '_' + LOCAL_RPC)
+    const lStr = localStorage.getItem(CROSS_INIT_VERSION + '_' + LOCAL_RPC)
     let lObj ={}
     if (lStr) {
       lObj = JSON.parse(lStr)
@@ -44,5 +45,5 @@ import {
     } else {
       lObj[chainId] = initRpc
     }
-    localStorage.setItem(USE_VERSION + '_' + LOCAL_RPC, JSON.stringify(lObj))
+    localStorage.setItem(CROSS_INIT_VERSION + '_' + LOCAL_RPC, JSON.stringify(lObj))
   }
