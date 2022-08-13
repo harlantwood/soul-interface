@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 // import useWalletProvider from "./useWalletProvider";
-import { bridgeNetworks } from "../utils/bridge";
+import { bridgeNetworks } from "utils/bridge/bridge";
 import config from "config/configurations";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { useActiveWeb3React } from "services/web3";
