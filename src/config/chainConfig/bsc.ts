@@ -1,5 +1,5 @@
-import {formatSwapTokenList} from './methods'
-import { tokenListUrl, VERSION, CROSS_INIT_VERSION} from 'constants/bridges'
+import {formatSwapTokenList, getLocalRPC} from './methods'
+import { tokenListUrl, VERSION, USE_VERSION } from 'constants/bridges'
 // console.log(process.env)
 // alert(process.env.NODE_ENV)
 
@@ -19,11 +19,11 @@ const useNode = 'https://bsc-dataseed3.ninicoin.io/'
 // const useNode = 'https://bsc-dataseed4.binance.org/'
 
 export const BNB_MAIN_CHAINID = 56
-export const BNB_MAINNET = process.env.NODE_ENV === 'development' ? useNode : 'https://bscnode1.anyswap.exchange'
+export const BNB_MAINNET = process.env.NODE_ENV === 'development' ? getLocalRPC(BNB_MAIN_CHAINID, useNode) : getLocalRPC(BNB_MAIN_CHAINID, 'https://bscnode1.anyswap.exchange')
 export const BNB_MAIN_EXPLORER = 'https://bscscan.com'
 // console.log(BNB_MAINNET)
 export const BNB_TEST_CHAINID = 97
-export const BNB_TESTNET = 'https://data-seed-prebsc-1-s1.binance.org:8545'
+export const BNB_TESTNET = getLocalRPC(BNB_TEST_CHAINID, 'https://data-seed-prebsc-1-s1.binance.org:8545')
 export const BNB_TEST_EXPLORER = 'https://testnet.bscscan.com'
 
 export const tokenList = [
@@ -108,7 +108,7 @@ export default {
   [BNB_MAIN_CHAINID]: {
     tokenListUrl: tokenListUrl + BNB_MAIN_CHAINID,
     tokenList: formatSwapTokenList(symbol, tokenList),
-    ...bridgeToken[CROSS_INIT_VERSION],
+    ...bridgeToken[USE_VERSION],
     swapRouterToken: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
     swapInitToken: '0x55d398326f99059ff775485246999027b3197955',
     // multicalToken: '0xe348b292e8eA5FAB54340656f3D374b259D658b8',
@@ -148,7 +148,7 @@ export default {
   [BNB_TEST_CHAINID]: {
     tokenListUrl: tokenListUrl + BNB_TEST_CHAINID,
     tokenList: formatSwapTokenList(symbol, testTokenList),
-    ...bridgeToken[CROSS_INIT_VERSION],
+    ...bridgeToken[USE_VERSION],
     swapRouterToken: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
     swapInitToken: '0x461d52769884ca6235b685ef2040f47d30c94eb5',
     multicalToken: '0xe348b292e8eA5FAB54340656f3D374b259D658b8',

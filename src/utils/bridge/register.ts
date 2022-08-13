@@ -3,12 +3,12 @@ import { getLocalConfig } from 'utils/tools'
 import { CROSSCHAINBRIDGE } from './type'
 
 import { bridgeNetworks } from './bridge'
-import { CROSS_INIT_VERSION, timeout } from 'constants/bridges'
+import { timeout, USE_VERSION } from 'constants/bridges'
 
 export function registerSwap (hash:string, chainId:any) {
   return new Promise(resolve => {
     console.log(hash)
-    const url = `${bridgeNetworks.bridgeApi}/v3/register?hash=${hash}&chainId=${chainId}&type=${CROSS_INIT_VERSION}`
+    const url = `${bridgeNetworks.bridgeApi}/v3/register?hash=${hash}&chainId=${chainId}&type=${USE_VERSION}`
     getUrlData(url).then(res => {
       console.log(res)
       resolve(res)
@@ -46,7 +46,7 @@ export function recordsTxns ({
   return new Promise(resolve => {
     // console.log(hash)
     const url = `${bridgeNetworks.bridgeApi}/v3/records`
-    const useVersion = version ? version : CROSS_INIT_VERSION
+    const useVersion = version ? version : USE_VERSION
     // console.log(version)
     // console.log(USE_VERSION)
     const data = {

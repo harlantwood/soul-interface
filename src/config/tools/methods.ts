@@ -1,6 +1,6 @@
 import { chainInfo } from '../chainConfig'
 import {
-  ENV_NODE_CONFIG_CROSS
+  ENV_NODE_CONFIG
 } from 'constants/bridges'
 
 export function selectNetwork (chainID:any) {
@@ -34,7 +34,7 @@ export function selectNetwork (chainID:any) {
       ethereumFN.request(data).then((res: any) => {
         // console.log(chainID)
         console.log(res)
-        localStorage.setItem(ENV_NODE_CONFIG_CROSS, chainInfo[chainID].label)
+        localStorage.setItem(ENV_NODE_CONFIG, chainInfo[chainID].label)
         history.go(0)
         resolve({
           msg: 'Success'

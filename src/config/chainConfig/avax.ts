@@ -1,8 +1,8 @@
-import {formatSwapTokenList} from './methods'
-import { tokenListUrl, VERSION, CROSS_INIT_VERSION} from 'constants/bridges'
+import {formatSwapTokenList, getLocalRPC} from './methods'
+import { tokenListUrl, VERSION, USE_VERSION } from 'constants/bridges'
 
 export const AVAX_MAIN_CHAINID = 43114
-export const AVAX_MAINNET = 'https://api.avax.network/ext/bc/C/rpc'
+export const AVAX_MAINNET = getLocalRPC(AVAX_MAIN_CHAINID, 'https://api.avax.network/ext/bc/C/rpc')
 export const AVAX_MAIN_EXPLORER = 'https://snowtrace.io'
 
 export const tokenList = [
@@ -45,7 +45,7 @@ export default {
   [AVAX_MAIN_CHAINID]: {
     tokenListUrl: tokenListUrl + AVAX_MAIN_CHAINID,
     tokenList: formatSwapTokenList(symbol, tokenList),
-    ...bridgeToken[CROSS_INIT_VERSION],
+    ...bridgeToken[USE_VERSION],
     swapRouterToken: '',
     swapInitToken: '',
     multicalToken: '0xd8e95abcce8901cc2640d2ff4444c85506fb829d',

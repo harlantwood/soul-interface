@@ -41,7 +41,7 @@ export const timeout = 1000 * 60 * 30
 
 // export const INIT_VERSION = VERSION.V1_1
 // export const INIT_VERSION = VERSION.V3_1
-export const CROSS_INIT_VERSION = VERSION.V2_2
+// export const INIT_VERSION = VERSION.V2_2
 // export const INIT_VERSION = VERSION.V4_OKT
 // const INIT_VERSION = VERSION.V4_MOVR
 export const INIT_VERSION = VERSION.V5
@@ -49,47 +49,47 @@ export const INIT_VERSION = VERSION.V5
 // export const INIT_VERSION = VERSION.V6_1
 // export const INIT_VERSION = VERSION.V7
 
-// export function getUrlVersion (init:any) {
-//   const url = window.location.href
-//   let version:any
-//   if (url.indexOf('https://stable.anyswap.exchange') === 0) {
-//     version = VERSION.V2_2
-//   } else if (url.indexOf('https://router.anyswap.exchange') === 0) {
-//     version = VERSION.V1_1
-//   } else if (url.indexOf('https://oec.anyswap.exchange') === 0) {
-//     version = VERSION.V4_OKT
-//   } else if (url.indexOf('https://movr.anyswap.exchange') === 0) {
-//     version = VERSION.V4_MOVR
-//   } else if (
-//     url.indexOf('https://app.anyswap.exchange') === 0
-//     || url.indexOf('https://anyswap.exchange') === 0
-//   ) {
-//     version = VERSION.V5
-//   } else if (url.indexOf('https://arb.anyswap.exchange') === 0) {
-//     version = VERSION.V3_1
-//   } else if (url.indexOf('https://nft.anyswap.exchange') === 0) {
-//     version = VERSION.V6_1
-//   } else if (url.indexOf('https://nfttest.anyswap.exchange') === 0) {
-//     version = VERSION.V6
-//   } else {
-//     version = init
-//   }
-//   return version
-// }
-// const USE_VERSION:any = getUrlVersion(INIT_VERSION)
-// // console.log(USE_VERSION)
-// function initVersion (version:any, configVersion:any) {
-//   const VERSION = version + '_VERSION'
-//   const curVersion = localStorage.getItem(VERSION)
-//   if (curVersion && curVersion !== configVersion) {
-//     sessionStorage.clear()
-//     localStorage.clear()
-//     localStorage.setItem(VERSION, configVersion)
-//   } else if (!curVersion) {
-//     localStorage.setItem(VERSION, configVersion)
-//   }
-// }
-// initVersion(USE_VERSION, version)
+export function getUrlVersion (init:any) {
+  const url = window.location.href
+  let version:any
+  if (url.indexOf('https://stable.anyswap.exchange') === 0) {
+    version = VERSION.V2_2
+  } else if (url.indexOf('https://router.anyswap.exchange') === 0) {
+    version = VERSION.V1_1
+  } else if (url.indexOf('https://oec.anyswap.exchange') === 0) {
+    version = VERSION.V4_OKT
+  } else if (url.indexOf('https://movr.anyswap.exchange') === 0) {
+    version = VERSION.V4_MOVR
+  } else if (
+    url.indexOf('https://app.anyswap.exchange') === 0
+    || url.indexOf('https://anyswap.exchange') === 0
+  ) {
+    version = VERSION.V5
+  } else if (url.indexOf('https://arb.anyswap.exchange') === 0) {
+    version = VERSION.V3_1
+  } else if (url.indexOf('https://nft.anyswap.exchange') === 0) {
+    version = VERSION.V6_1
+  } else if (url.indexOf('https://nfttest.anyswap.exchange') === 0) {
+    version = VERSION.V6
+  } else {
+    version = init
+  }
+  return version
+}
+export const USE_VERSION:any = getUrlVersion(INIT_VERSION)
+// console.log(USE_VERSION)
+function initVersion (version:any, configVersion:any) {
+  const VERSION = version + '_VERSION'
+  const curVersion = localStorage.getItem(VERSION)
+  if (curVersion && curVersion !== configVersion) {
+    sessionStorage.clear()
+    localStorage.clear()
+    localStorage.setItem(VERSION, configVersion)
+  } else if (!curVersion) {
+    localStorage.setItem(VERSION, configVersion)
+  }
+}
+initVersion(USE_VERSION, version)
 
 function formatHiddenCoin (list?:Array<any>) {
   const arr:any = []
@@ -297,8 +297,8 @@ export const controlConfig:any = {
 }
 
 
-export const ENV_NODE_CONFIG_CROSS = CROSS_INIT_VERSION + '_ENV_NODE_CONFIG'
+export const ENV_NODE_CONFIG = USE_VERSION + '_ENV_NODE_CONFIG'
 
-export const INIT_NODE_CROSS = controlConfig[CROSS_INIT_VERSION].initNode
+export const INIT_NODE = controlConfig[USE_VERSION].initNode
 
 export const BASECURRENCY = 'BASECURRENCY'

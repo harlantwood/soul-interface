@@ -49,9 +49,9 @@ export default function Sor() {
   const { account, chainId } = useActiveWeb3React()
   const { stake, redeem, claimSor, claimDai } = useSorContract()
 
-  // if (chainId && chainId === ChainId.ETHEREUM)
+  if (chainId && chainId === ChainId.ETHEREUM)
     // DELETE
-  // window.location.href = '/swap'
+  window.location.href = '/swap'
 
   const daiToken = new Token(chainId, getAddress(DAI_ADDRESS[chainId]), 18, 'DAI')
   const sorToken = new Token(chainId, getAddress(SOR_ADDRESS[chainId]), 18, 'SOR')

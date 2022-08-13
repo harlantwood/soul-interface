@@ -1,8 +1,8 @@
-import {formatSwapTokenList} from './methods'
-import { tokenListUrl, VERSION, CROSS_INIT_VERSION } from 'constants/bridges'
+import {formatSwapTokenList, getLocalRPC} from './methods'
+import { tokenListUrl, VERSION, USE_VERSION } from 'constants/bridges'
 
 export const TLOS_MAIN_CHAINID = 40
-export const TLOS_MAINNET = 'https://rpc1.us.telos.net/evm'
+export const TLOS_MAINNET = getLocalRPC(TLOS_MAIN_CHAINID, 'https://rpc1.us.telos.net/evm')
 export const TLOS_MAIN_EXPLORER = 'https://rpc1.us.telos.net/v2/explore/evm'
 
 export const tokenList = []
@@ -33,7 +33,7 @@ export default {
   [TLOS_MAIN_CHAINID]: {
     tokenListUrl: tokenListUrl + TLOS_MAIN_CHAINID,
     tokenList: formatSwapTokenList(symbol, tokenList),
-    ...bridgeToken[CROSS_INIT_VERSION],
+    ...bridgeToken[USE_VERSION],
     swapRouterToken: '',
     swapInitToken: '',
     multicalToken: '0xE1A34ca06e57f981A51C6a9518d1bCDAb3cE1c6d',

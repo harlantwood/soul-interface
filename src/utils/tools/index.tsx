@@ -1,8 +1,8 @@
 import { formatUnits, parseUnits } from '@ethersproject/units'
 import config from 'config/configurations'
-import { CROSS_INIT_VERSION} from 'constants/bridges'
+import { USE_VERSION } from 'constants/bridges'
 import { bridgeNetworks } from 'utils/bridge/bridge'
-// import { CROSS_INIT_VERSION} from 'constants/bridges'
+// import { USE_VERSION } from 'constants/bridges'
 // import {config} from 'config'
 
 // console.log(config)
