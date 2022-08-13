@@ -408,8 +408,8 @@ const App = () => {
         </Box>
       </Box>
     </ThemeProvider>
-  );
-};
+  )
+}
 
 // root.render(
 //   <React.StrictMode>
