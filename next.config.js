@@ -167,10 +167,6 @@ module.exports = withBundleAnalyzer(
           source: '/sor',
           destination: '/luxor/sor',
         },
-        // {
-        //   source: '/migrate',
-        //   destination: '/exchange/migrate',
-        // },
         {
           source: '/pool',
           destination: '/exchange/pool',
@@ -225,16 +221,6 @@ module.exports = withBundleAnalyzer(
       // localeDetection: true,
       locales,
       defaultLocale: sourceLocale,
-    },
-    network: {
-      chainIds: [ChainId.FANTOM],
-      defaultChainId: ChainId.FANTOM,
-      domains: [
-        {
-          domain: 'soulswap.finance',
-          defaultChainId: ChainId.FANTOM,
-        },
-      ],
     },
     publicRuntimeConfig: {
       breakpoints: screens,

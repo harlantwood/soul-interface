@@ -176,7 +176,6 @@
     "@sushiswap/kashi-sdk": "^1.0.0-canary.10",
     "@sushiswap/limit-order-sdk": "^1.0.0-canary.20",
     "@sushiswap/sdk": "^5.0.0-canary.116",
-    "@sushiswap/trident": "^1.0.0-canary.5",
     "@terra-money/terra.js": "^3.0.4",
     "@terra-money/wallet-provider": "^3.6.5",
     "@types/big.js": "6.1.1",
