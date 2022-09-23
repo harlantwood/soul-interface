@@ -516,9 +516,6 @@ msgstr ""
 msgid "Enter Amount"
 msgstr ""
 
-msgid "Enter Recipient"
-msgstr ""
-
 msgid "Enter a valid slippage percentage"
 msgstr ""
 
@@ -742,9 +739,6 @@ msgstr ""
 msgid "Invalid Pool"
 msgstr ""
 
-msgid "Invalid Recipient"
-msgstr ""
-
 msgid "Invalid pair"
 msgstr ""
 
@@ -812,9 +806,6 @@ msgid "Lists"
 msgstr ""
 
 msgid "Loading"
-msgstr ""
-
-msgid "Loading Balance"
 msgstr ""
 
 msgid "Loading balance"
@@ -914,9 +905,6 @@ msgid "Minted"
 msgstr ""
 
 msgid "Net Worth"
-msgstr ""
-
-msgid "Never"
 msgstr ""
 
 msgid "New to Fantom?"
@@ -1240,18 +1228,6 @@ msgid "Search lockers"
 msgstr ""
 
 msgid "Search name or paste address"
-msgstr ""
-
-msgid "Select Asset"
-msgstr ""
-
-msgid "Select Collateral"
-msgstr ""
-
-msgid "Select Order Expiration"
-msgstr ""
-
-msgid "Select Rate"
 msgstr ""
 
 msgid "Select Token"
