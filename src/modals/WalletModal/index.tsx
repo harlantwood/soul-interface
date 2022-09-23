@@ -105,13 +105,14 @@ const WalletModal: FC<WalletModal> = ({ pendingTransactions, confirmedTransactio
       setWalletView(WALLET_VIEWS.PENDING)
 
       // if the connector is walletconnect and the user has already tried to connect, manually reset the connector
+        // @ts-ignore TYPE NEEDS FIXING
       if (conn instanceof WalletConnectConnector && conn.walletConnectProvider?.wc?.uri) {
         conn.walletConnectProvider = undefined
       }
-
+      
       conn &&
-        activate(conn, undefined, true).catch((error) => {
-          if (error instanceof UnsupportedChainIdError) {
+      activate(conn, undefined, true).catch((error) => {
+        if (error instanceof UnsupportedChainIdError) {
             // @ts-ignore TYPE NEEDS FIXING
             activate(conn) // a little janky...can't use setError because the connector isn't set
           } else {

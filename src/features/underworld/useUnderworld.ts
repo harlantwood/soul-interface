@@ -5,7 +5,6 @@ import { ethers, BigNumber } from 'ethers'
 import {
   usePriceHelperContract,
   useBondHelperContract,
-  useSoulBondContract,
   usePairContract,
 } from 'features/bond/hooks/useContract'
 
@@ -13,7 +12,7 @@ import { SoulBondAddress, BOND_HELPER_ADDRESS as BondHelperAddress } from 'featu
 
 import { useActiveWeb3React } from 'services/web3'
 import { useFantomPrice, useSeancePrice, useSoulPrice, useWrappedEthPrice } from 'hooks/getPrices'
-import { useAutoStakeContract } from 'hooks/useContract'
+import { useAutoStakeContract, useSoulBondContract } from 'hooks/useContract'
 
 // const helperContract = useHelperContract()
 

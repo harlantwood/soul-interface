@@ -69,8 +69,9 @@ import ARCHER_ROUTER_ABI from '../constants/abis/archer-router.json'
 import BASE_SWAPPER_ABI from '../constants/abis/swapper.json'
 import ANYSWAP_ERC20_ABI from '../constants/abis/anyswap_erc20.json'
 import SPOOKY_FACTORY_ABI from '../constants/abis/spookyswap-factory.json'
-import COFFINBOX_ABI from '../constants/abis/coffinbox.json'
+// import COFFINBOX_ABI from '../constants/abis/coffinbox.json'
 import SOUL_CIRCLE_ABI from 'constants/abis/soulswap/soulcircle.json' 
+import SOUL_BOND_ABI from 'constants/abis/soulbond.json' 
 import LUX_HELPER_ABI from 'constants/abis/lux-bond-helper.json' 
 import CHAINLINK_ORACLE_ABI from '../constants/abis/chainlink-oracle.json'
 import COMPLEX_REWARDER_ABI from '../constants/abis/complex-rewarder.json'
@@ -144,6 +145,7 @@ import LIMIT_ORDER_HELPER_ABI from '../constants/abis/limit-order-helper.json'
 import { getContract } from '../functions/contract'
 import { useActiveWeb3React } from 'services/web3'
 import { useMemo } from 'react'
+import { SOUL_BOND_ADDRESS } from 'features/bond/constants'
 
 export function useEIP2612Contract(tokenAddress?: string): Contract | null {
   return useContract(tokenAddress, EIP_2612_ABI, false)
@@ -378,6 +380,11 @@ export function useTridentRouterContract(withSignerIfPossible?: boolean): Contra
 export function useMasterChefContract(withSignerIfPossible?: boolean): Contract | null {
   const { chainId } = useActiveWeb3React()
   return useContract(chainId && SOUL_SUMMONER_ADDRESS[chainId], SOUL_SUMMONER_ABI, withSignerIfPossible) // 31 JUL (SOUL SUMMONER)
+}
+
+export function useSoulBondContract(withSignerIfPossible?: boolean): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId && SOUL_BOND_ADDRESS[chainId], SOUL_BOND_ABI, withSignerIfPossible)
 }
 
 export function useCircleStakingContract(withSignerIfPossible?: boolean): Contract | null {

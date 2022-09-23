@@ -6,10 +6,11 @@ import {
   useHelperContract,
   usePriceHelperContract,
   useBondHelperContract,
-  useSoulBondContract,
   usePairContract,
   useTokenContract,
 } from './useContract'
+
+import { useSoulBondContract } from 'hooks/useContract'
 
 import { SoulBondAddress, BOND_HELPER_ADDRESS as BondHelperAddress } from '../constants'
 

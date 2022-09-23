@@ -12,6 +12,7 @@ export const pageview = (url) => {
 // https://developers.google.com/analytics/devguides/collection/gtagjs/events
 // @ts-ignore TYPE NEEDS FIXING
 export const event = ({ action, category, label, value }) => {
+  // @ts-ignore TYPE NEEDS FIXING
   window.gtag('event', action, {
     event_category: category,
     event_label: label,
@@ -22,6 +23,7 @@ export const event = ({ action, category, label, value }) => {
 // https://developers.google.com/analytics/devguides/collection/gtagjs/exceptions
 // @ts-ignore TYPE NEEDS FIXING
 export const exception = ({ description, fatal }) => {
+  // @ts-ignore TYPE NEEDS FIXING
   window.gtag('event', 'exception', {
     description,
     fatal,

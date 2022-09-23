@@ -1,15 +1,10 @@
-import {
-  ChainId,
-  // MULTICALL_ADDRESS,
+import {  
   FACTORY_ADDRESS,
-  // ROUTER_ADDRESS,
-  // ENCHANT_ADDRESS,
   SOUL_ADDRESS,
   SOUL_SUMMONER_ADDRESS,
   SOUL_CIRCLE_ADDRESS,
   SOUL_VAULT_ADDRESS,
   SOUL_GUIDE_ADDRESS,
-  // TIMELOCK_ADDRESS,
   WNATIVE,
 } from 'sdk'
 
@@ -23,7 +18,6 @@ import FACTORY_ABI from '../constants/abis/factory.json'
 // soul
 import SOUL_GUIDE_ABI from '../constants/abis/multicall.json'
 import SOUL_SUMMONER_ABI from '../constants/abis/soulsummoner.json' 
-import SOUL_BOND_ABI from '../constants/abis/soulbond.json' 
 import BOND_HELPER_ABI from '../constants/abis/bondhelper.json' 
 import PRICE_HELPER_ABI from '../constants/abis/pricehelper.json' 
 import SOUL_CIRCLE_ABI from '../constants/abis/soulcircle.json' 
@@ -101,11 +95,6 @@ export function useSoulContract(withSignerIfPossible = true): Contract | null {
 export function useSoulVaultContract(withSignerIfPossible = true): Contract | null {
   const { chainId } = useActiveWeb3React()
   return useContract(chainId && SOUL_VAULT_ADDRESS[chainId], SOULVAULT_ABI, withSignerIfPossible)
-}
-
-export function useSoulBondContract(withSignerIfPossible?: boolean): Contract | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(chainId && SOUL_BOND_ADDRESS[chainId], SOUL_BOND_ABI, withSignerIfPossible)
 }
 
 export function useSoulSummonerContract(withSignerIfPossible?: boolean): Contract | null {
