@@ -1,11 +1,8 @@
-
-/* eslint-disable @next/next/link-passhref */
-
 import Head from 'next/head'
 import React, { useCallback, useState } from 'react'
 import { t } from '@lingui/macro'
 import { formatNumberScale } from '../../../functions'
-import { Button, ButtonError } from '../../../components/Button'
+import { Button } from '../../../components/Button'
 import { AutoColumn } from '../../../components/Column'
 import { AutoRow } from '../../../components/Row'
 import DoubleGlowShadowV2 from '../../../components/DoubleGlowShadowV2'
@@ -21,7 +18,6 @@ import axios from 'axios'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { FAUCET_ADDRESS } from '../../../constants'
 import NavLink from '../../../components/NavLink'
-import { ArrowLeftIcon } from '@heroicons/react/solid'
 import { getChainColor, getChainColorCode } from 'constants/chains'
 
 export default function Faucet(): JSX.Element {

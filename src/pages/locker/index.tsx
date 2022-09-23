@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/link-passhref */
 import { useActiveWeb3React } from 'services/web3'
 import Head from 'next/head'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -10,7 +9,6 @@ import Card from '../../components/Card'
 import { t } from '@lingui/macro'
 import { useLingui } from '@lingui/react'
 import DoubleGlowShadowV2 from '../../components/DoubleGlowShadowV2'
-// import SoulLogo from '../../components/SoulLogo'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import useLocker from '../../features/locker/useLocker'
 import { Disclosure } from '@headlessui/react'

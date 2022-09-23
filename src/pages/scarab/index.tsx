@@ -1,7 +1,5 @@
-/* eslint-disable @next/next/link-passhref */
 import Head from 'next/head'
 import React, { useCallback, useEffect, useState } from 'react'
-import Search from '../../components/Search'
 import {
   ApprovalState,
   useApproveCallback,
@@ -9,12 +7,10 @@ import {
 
 import { classNames, isAddress, tryParseAmount } from '../../functions'
 import NavLink from '../../components/NavLink'
-import Link from 'next/link'
 import Card from '../../components/Card'
 import { t } from '@lingui/macro'
 import { useLingui } from '@lingui/react'
 import DoubleGlowShadowV2 from '../../components/DoubleGlowShadowV2'
-// import SoulLogo from '../../components/SoulLogo'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { SCARAB_ADDRESS } from '../../constants'
 import useScarab from '../../features/scarab/useScarab'
