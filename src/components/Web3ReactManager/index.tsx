@@ -7,7 +7,6 @@ import useEagerConnect from 'hooks/useEagerConnect'
 import useInactiveListener from 'hooks/useInactiveListener'
 import dynamic from 'next/dynamic'
 import React, { useEffect, useState } from 'react'
-
 import Loader from '../Loader'
 
 const GnosisManagerNoSSR = dynamic(() => import('./GnosisManager'), {
@@ -71,7 +70,7 @@ export default function Web3ReactManager({ children }: { children: JSX.Element }
 
   return (
     <>
-      {/* <GnosisManagerNoSSR /> */}
+      <GnosisManagerNoSSR />
       {children}
     </>
   )

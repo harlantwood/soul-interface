@@ -1,6 +1,7 @@
+import { useTokenInfo } from "./useAPI";
 import useRestApi from "./useRestApi";
 
-export const OPENOCEAN_BASEURL = "https://open-api.openocean.finance/v3/cross";
+export const OPENOCEAN_BASEURL = "https://open-api.openocean.finance/v1/cross";
 
 export enum OPENOCEAN_METHODS {
   GET_TOKENLIST = "/tokenList",
@@ -16,7 +17,15 @@ export type OOToken = {
   icon: string;
 };
 
-const useOpenOceanApi = () => {
+const useOpenOceanApi = (inToken?: string, outToken?: string) => {
+  const inTokenSymbol = useTokenInfo(inToken).tokenInfo.symbol
+  const outTokenSymbol = useTokenInfo(outToken).tokenInfo.symbol
+  
+  const inTokenDecimals = useTokenInfo(inToken).tokenInfo.decimals
+  const outTokenDecimals = useTokenInfo(outToken).tokenInfo.decimals
+
+  const inTokenAddress = useTokenInfo(inToken).tokenInfo.address
+  const outTokenAddress = useTokenInfo(outToken).tokenInfo.address
   const { get } = useRestApi(OPENOCEAN_BASEURL);
 
   const getTokenList = () => {
@@ -27,18 +36,18 @@ const useOpenOceanApi = () => {
   };
 
   const getQuote = (
-    inToken: OOToken,
-    outToken: OOToken,
+    // inToken: string,
+    // outToken: string,
     amount: string,
     slippage: number
   ) => {
     return get({
       path: OPENOCEAN_METHODS.GET_QUOTE,
       queryParams: [
-        ["inTokenSymbol", inToken.symbol],
-        ["inTokenAddress", inToken.address],
-        ["outTokenSymbol", outToken.symbol],
-        ["outTokenAddress", outToken.address],
+        ["inTokenSymbol", inTokenSymbol],
+        ["inTokenAddress", inTokenAddress],
+        ["outTokenSymbol", outTokenSymbol],
+        ["outTokenAddress", outTokenAddress],
         ["amount", amount],
         ["gasPrice", 100],
         ["slippage", slippage],
@@ -50,8 +59,8 @@ const useOpenOceanApi = () => {
   };
 
   const getSwapQuote = (
-    inToken: OOToken,
-    outToken: OOToken,
+    // inToken: OOToken,
+    // outToken: OOToken,
     amount: string,
     slippage: number,
     account: string
@@ -59,12 +68,12 @@ const useOpenOceanApi = () => {
     return get({
       path: OPENOCEAN_METHODS.GET_SWAP_QUOTE,
       queryParams: [
-        ["inTokenSymbol", inToken.symbol],
-        ["inTokenAddress", inToken.address],
-        ["in_token_decimals", inToken.decimals],
-        ["outTokenSymbol", outToken.symbol],
-        ["outTokenAddress", outToken.address],
-        ["out_token_decimals", outToken.decimals],
+        ["inTokenSymbol", inTokenSymbol],
+        ["inTokenAddress", inTokenAddress],
+        ["in_token_decimals", inTokenDecimals],
+        ["outTokenSymbol", outTokenSymbol],
+        ["outTokenAddress", outTokenAddress],
+        ["out_token_decimals", outTokenDecimals],
         ["amount", amount],
         ["gasPrice", 100],
         ["slippage", slippage],

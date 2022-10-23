@@ -1,6 +1,7 @@
 import { formatHexToBN } from "./conversion";
-import { Token } from "./types";
+import { Token } from "sdk";
 import { BigNumber } from "@ethersproject/bignumber";
+import { useUserTokenInfo } from "hooks/useAPI";
 
 export interface Account {
   account: {
@@ -68,5 +69,5 @@ export const getAccountAssetBalance = (
     return;
   }
 
-  return formatHexToBN(asset.balanceOf);
+//   return formatHexToBN(assetBalance);
 };

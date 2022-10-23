@@ -6,10 +6,13 @@ import Row from "../Row";
 import ftmIcon from "assets/networks/fantom.svg";
 import Spacer from "../Spacer";
 // import vShape from "../../assets/img/shapes/vShape.png";
-
+import Image from 'components/Image'
+import { useActiveWeb3React } from "services/web3";
+import { getChainInfo } from "constants/chains";
+import { useTokenInfo } from "hooks/useAPI";
 const vShape = 'https://raw.githubusercontent.com/BunsDev/fWallet-interface/buns/packages/app/src/assets/img/shapes/vShape.png'
 
-const TokenSelectButton: React.FC<any> = ({
+const TokenSelectButton = ({
   currentToken,
   ftmBalance,
   assets,
@@ -25,6 +28,9 @@ const TokenSelectButton: React.FC<any> = ({
     />,
     "token-select-modal"
   );
+  const { chainId } = useActiveWeb3React()
+  const tokenURI = `https://raw.githubusercontent.com/SoulSwapFinance/assets/master/blockchains/${getChainInfo(chainId, 'NAME').toLowerCase()}/assets/${currentToken.wrapped.address}/logo.png`
+  const currentTokenSymbol = useTokenInfo(currentToken.wrapped.address).tokenInfo.symbol
   return (
     <Button
       style={{ flex: 2, padding: "10px" }}
@@ -32,19 +38,21 @@ const TokenSelectButton: React.FC<any> = ({
       onClick={() => onPresentSelectTokenModal()}
     >
       <Row style={{ alignItems: "center" }}>
-        <img
+        <Image
           alt=""
-          src={currentToken.symbol === "FTM" ? ftmIcon : currentToken.logoURL}
+          src={currentToken.isNative ? ftmIcon : tokenURI}
+          height="24px"
+          width="24px"
           style={{ height: "24px" }}
         />
         <Spacer 
         // size="xxs" 
         />
-        <Typo2>{currentToken.symbol}</Typo2>
+        <Typo2>{currentTokenSymbol}</Typo2>
         <Spacer 
         // size="sm" 
         />
-        <img alt="" src={vShape} />
+        <Image alt="" src={vShape} />
       </Row>
     </Button>
   );

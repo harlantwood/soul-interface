@@ -1,11 +1,11 @@
 import React, { lazy, SetStateAction, useCallback, useMemo, useState } from 'react'
-import { BigNumber } from 'bignumber.js'
-import { useTokenContract } from 'hooks/useContract'
-import qs from 'qs'
+// import { BigNumber } from 'bignumber.js'
+// import { useTokenContract } from 'hooks/useContract'
+// import qs from 'qs'
 import Typography from 'components/Typography'
 import { useActiveWeb3React } from 'services/web3'
-import Web3 from 'web3'
-import { ChainId, Currency, NATIVE, Token, WNATIVE } from 'sdk';
+// import Web3 from 'web3'
+import { WNATIVE } from 'sdk';
 // import TradingView from 'components/TradingViewChart'
 // import LiveChart from 'components/LiveChart'
 // import LineChart from 'components/LiveChart/LineChart'
@@ -13,7 +13,7 @@ import { ChainId, Currency, NATIVE, Token, WNATIVE } from 'sdk';
 // import TokenList from 'features/analytics/Tokens/TokenList'
 import SwapAssetPanel from 'features/trident/swap/SwapAssetPanel'
 import { classNames } from 'functions/styling'
-import { SwapLayoutCard } from 'layouts/SwapLayout'
+// import { SwapLayoutCard } from 'layouts/SwapLayout'
 import { useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from 'state/swap/hooks'
 import useWrapCallback, { WrapType } from 'hooks/useWrapCallback'
 import { Field } from 'state/swap/actions'
@@ -216,7 +216,7 @@ export default function Aggregate() {
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE
 
-  const isValid = !swapInputError
+  // const isValid = !swapInputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
   const trade = showWrap ? undefined : v2Trade
 

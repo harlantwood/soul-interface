@@ -13,6 +13,8 @@ import {
   Typo2,
   Typo3,
 } from "components";
+
+import Image from 'components/Image'
 import Row from "components/Row";
 import InputError from "components/InputError";
 import useOpenOceanApi, {
@@ -27,14 +29,13 @@ import InputCurrency from "components/InputCurrency";
 import TokenSelectButton from "components/TokenSelectModal";
 import useFantomApi, { FantomApiMethods } from "hooks/useFantomAPI";
 import useFantomApiData from "hooks/useFantomAPIData";
-// import useWalletProvider from "hooks/useWalletProvider";
 import {
   toFormattedBalance,
   unitToWei,
-  weiToMaxUnit,
+  // weiToMaxUnit,
   weiToUnit,
 } from "utils/conversion";
-// import SwapImg from "assets/img/symbols/Swap.svg";
+import SwapImg from "assets/icons/Swap.svg";
 import useFantomNative from "hooks/useFantomNative";
 import useFantomERC20 from "hooks/useFantomERC20";
 import config from "features/aggregator/config";
@@ -44,13 +45,14 @@ import useCoingeckoApi, {
   COINGECKO_BASEURL,
   COINGECKO_METHODS,
 } from "hooks/useCoinGeckoAPI";
-import Chart from "components/Chart";
-// import { formatDate } from "utils/common";
+import Chart from "components/Aggregator/Chart";
 import FadeInOut from "components/AnimationFade";
 import useDetectResolutionType from "hooks/useDetectResolutionType";
-// import openoceanImg from "assets/img/icons/openocean.svg";
+import openoceanImg from "assets/icons/openocean.svg";
 import { formatDate } from "functions/format";
 import { useActiveWeb3React } from "services/web3";
+import { NATIVE, USDC, WNATIVE } from "sdk";
+import { useTokenInfo, useUserInfo, useUserTokenInfo } from "hooks/useAPI";
 
 const SwapTokenInput: React.FC<any> = ({
   inputValue,
@@ -63,31 +65,19 @@ const SwapTokenInput: React.FC<any> = ({
   disabledInput,
   refetchTimer,
 }) => {
-  const { color } = useContext(ThemeContext);
-  const { getTokenBalance } = useFantomERC20();
-  const { getBalance } = useFantomNative();
+  // const { color } = useContext(ThemeContext);
+  const { account, chainId } = useActiveWeb3React()
+  // const { getTokenBalance } = useFantomERC20();
+  // const { getBalance } = useFantomNative();
   const [error, setError] = useState(null);
-  const [tokenBalance, setTokenBalance] = useState(BigNumber.from(0));
-  const [formattedTokenBalance, setFormattedTokenBalance] = useState<any>([
-    "0",
-    "0",
-  ]);
+  const [tokenBalance, setTokenBalance] = useState('');
+  let nativeBalance = Number(useUserInfo().userInfo.nativeBalance)
+  let ercBalance = Number(useUserTokenInfo(account, token.address).userTokenInfo.balance)
   const [maximum, setMaximum] = useState(null);
-  const handleSetMax = () => {
+  const handleSetMax = async () => {
     setError(null);
     setInputValue(
-      weiToMaxUnit(
-        tokenBalance
-          .sub(
-            BigNumber.from(10).pow(
-              token.address === "0x0000000000000000000000000000000000000000"
-                ? token.decimals
-                : 1
-            )
-          )
-          .toString(),
-        token.decimals
-      )
+      token.isNative ? await setTokenBalance(nativeBalance.toString()) : await setTokenBalance(ercBalance.toString())
     );
   };
   const handleTokenChange = (token: any) => {
@@ -97,48 +87,34 @@ const SwapTokenInput: React.FC<any> = ({
 
   useEffect(() => {
     if (token) {
-      setTokenBalance(BigNumber.from(token.balanceOf));
-      setFormattedTokenBalance(
-        toFormattedBalance(
-          weiToUnit(BigNumber.from(token.balanceOf), token.decimals)
-        )
-      );
+      setTokenBalance(ercBalance.toString());
+      
       if (!disableMaximum) {
-        setMaximum(weiToMaxUnit(token.balanceOf, token.decimals));
+        setMaximum(
+          // weiToMaxUnit(
+            ercBalance
+            // , token.decimals)
+            );
       }
     }
   }, [token]);
-
-  useEffect(() => {
-    if (token) {
-      if (token.address === "0x0000000000000000000000000000000000000000") {
-        return getBalance().then((balance: any) => {
-          setFormattedTokenBalance(toFormattedBalance(weiToUnit(balance)));
-        });
-      }
-      return getTokenBalance(token.address).then((tokenBalance) =>
-        setFormattedTokenBalance(
-          toFormattedBalance(weiToUnit(tokenBalance, token.decimals))
-        )
-      );
-    }
-  }, [token, refetchTimer]);
 
   return (
     <Column>
       <Row style={{ position: "relative", justifyContent: "space-between" }}>
         <Typo2 style={{ color: 'grey' }}>{title}</Typo2>
         <Row>
-          <img alt="" src={walletSymbol} />
+          <Image alt="" src={walletSymbol} />
           <Spacer 
           // size="xs" 
           />
-          <FormattedValue
+          { tokenBalance }
+          {/* <FormattedValue
             formattedValue={formattedTokenBalance}
             tokenSymbol={token.symbol}
             color={'grey'}
             fontSize="16px"
-          />
+          /> */}
         </Row>
       </Row>
       <Spacer 
@@ -170,7 +146,7 @@ const SwapTokenInput: React.FC<any> = ({
               padding="8px"
               style={{ flex: 1 }}
               variant="tertiary"
-              onClick={handleSetMax}
+              onClick={async () => await handleSetMax}
             >
               {token.address === "0x0000000000000000000000000000000000000000"
                 ? "MAX"
@@ -180,7 +156,8 @@ const SwapTokenInput: React.FC<any> = ({
           <Spacer />
           <TokenSelectButton
             currentToken={token}
-            ftmBalance={BigNumber.from(tokenBalance)}
+            ftmBalance={tokenBalance}
+            // ftmBalance={BigNumber.from(tokenBalance)}
             assets={tokenList}
             setTokenSelected={handleTokenChange}
             includeNative={false}
@@ -205,12 +182,15 @@ const SwapTokensContent: React.FC<any> = ({
   setSwapRoute,
   refetchTimer,
 }) => {
-  const { color } = useContext(ThemeContext);
+  // const { color } = useContext(ThemeContext);
   // const { walletContext } = useWalletProvider();
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { sendTx } = useFantomNative();
   const { getAllowance, approve } = useFantomERC20();
-  const { getSwapQuote, getQuote } = useOpenOceanApi();
+  const [inToken, setInToken] = useState(WNATIVE[chainId]);
+  const [outToken, setOutToken] = useState(USDC[chainId]);
+
+  const { getSwapQuote, getQuote } = useOpenOceanApi(inToken.address, outToken.address);
   const { getPrice } = useCoingeckoApi();
   const { apiData } = useApiData();
   const OOQuoteData =
@@ -219,19 +199,20 @@ const SwapTokensContent: React.FC<any> = ({
   const OOSwapQuoteData =
     apiData[OPENOCEAN_BASEURL + OPENOCEAN_METHODS.GET_SWAP_QUOTE]?.response
       ?.data?.data;
-  const tokenPriceData =
-    apiData[COINGECKO_BASEURL + COINGECKO_METHODS.GET_PRICE]?.response?.data;
-
-  const [inToken, setInToken] = useState(null);
-  const [outToken, setOutToken] = useState(null);
+  // const tokenPriceData =
+  //   apiData[COINGECKO_BASEURL + COINGECKO_METHODS.GET_PRICE]?.response?.data;
   const [inTokenAmount, setInTokenAmount] = useState("1");
   const [outTokenAmount, setOutTokenAmount] = useState("");
   const [estimatedGas, setEstimatedGas] = useState(null);
   const [priceImpact, setPriceImpact] = useState(null);
   const [minReceived, setMinReceived] = useState(null);
-  const [allowance, setAllowance] = useState(BigNumber.from(0));
+  // const [allowance, setAllowance] = useState(BigNumber.from(0));
+  const [allowance, setAllowance] = useState(0)
+  
+  const inTokenPrice = Number(useTokenInfo(inToken.wrapped.address).tokenInfo.price)
+  const outTokenPrice = Number(useTokenInfo(outToken.wrapped.address).tokenInfo.price)
 
-  const hasAllowance = (value: BigNumber) => {
+  const hasAllowance = (value: number) => {
     if (inToken?.decimals) {
       if (inToken.address === "0x0000000000000000000000000000000000000000") {
         if (isApproveCompleted) {
@@ -239,7 +220,7 @@ const SwapTokensContent: React.FC<any> = ({
         }
         return true;
       }
-      return value.gte(unitToWei(inTokenAmount, inToken.decimals));
+      return value.toString().toBigNumber(inToken?.decimals) >= (unitToWei(inTokenAmount, inToken.decimals));
     }
     return false;
   };
@@ -328,10 +309,10 @@ const SwapTokensContent: React.FC<any> = ({
 
   useEffect(() => {
     if (inToken && outToken && parseFloat(inTokenAmount) > 0) {
-      getQuote(inToken, outToken, inTokenAmount, 2);
+      // getQuote(inToken, outToken, inTokenAmount, 2);
       getSwapQuote(
-        inToken,
-        outToken,
+        // inToken,
+        // outToken,
         inTokenAmount,
         2,
         account
@@ -347,7 +328,7 @@ const SwapTokensContent: React.FC<any> = ({
       OOSwapQuoteData &&
       parseFloat(inTokenAmount) > 0
     ) {
-      getPrice([inToken.code, outToken.code], "usd");
+      getPrice([inToken.address, outToken.address], "usd");
     }
   }, [inToken, outToken, OOSwapQuoteData]);
 
@@ -375,7 +356,8 @@ const SwapTokensContent: React.FC<any> = ({
       if (
         parseFloat(inTokenAmount).toFixed(4) ===
         parseFloat(
-          weiToUnit(BigNumber.from(OOSwapQuoteData.inAmount)).toString()
+          weiToUnit(OOSwapQuoteData.inAmount).toString()
+          // weiToUnit(BigNumber.from(OOSwapQuoteData.inAmount)).toString()
         ).toFixed(4)
       ) {
         // setOutTokenAmount(
@@ -418,7 +400,7 @@ const SwapTokensContent: React.FC<any> = ({
   useEffect(() => {
     if (
       OOSwapQuoteData &&
-      tokenPriceData &&
+      // tokenPriceData &&
       parseFloat(inTokenAmount) > 0 &&
       parseFloat(outTokenAmount) > 0
     ) {
@@ -430,8 +412,7 @@ const SwapTokensContent: React.FC<any> = ({
         BigNumber.from(OOSwapQuoteData.outAmount),
         outToken.decimals
       );
-      const inTokenPrice = tokenPriceData[inToken.code]["usd"];
-      const outTokenPrice = tokenPriceData[outToken.code]["usd"];
+
       // console.log(inTokenAmount, outTokenAmount, inTokenPrice, outTokenPrice);
       const priceImpact =
         (inTokenAmount * inTokenPrice - outTokenAmount * outTokenPrice) /
@@ -439,7 +420,7 @@ const SwapTokensContent: React.FC<any> = ({
 
       setPriceImpact(priceImpact * 100);
     }
-  }, [OOSwapQuoteData, tokenPriceData]);
+  }, [OOSwapQuoteData]);
 
   return (
     <ContentBox>
@@ -466,7 +447,9 @@ const SwapTokensContent: React.FC<any> = ({
               >
                 Powered by OpenOcean
               </Typo3>
-              {/* <img src={openoceanImg} /> */}
+              <Image src={openoceanImg} 
+              alt={''}
+              />
             </Row>
           </div>
         </Row>
@@ -504,7 +487,7 @@ const SwapTokensContent: React.FC<any> = ({
                 borderRadius: "50%",
               }}
             >
-              {/* <img alt="swap" style={{ height: "20px" }} src={SwapImg} /> */}
+              <Image alt="swap" style={{ height: "20px" }} src={SwapImg} />
             </Row>
           </OverlayButton>
           <div
@@ -541,8 +524,8 @@ const SwapTokensContent: React.FC<any> = ({
               ? "Swapping..."
               : isSwapCompleted
               ? "Swap successful"
-              : !minReceived
-              ? "Fetching best price..."
+              // : !minReceived
+              // ? "Fetching best price..."
               : "Swap"}
           </Button>
         ) : (
@@ -716,11 +699,13 @@ const TokenChart: React.FC<any> = ({ activeTokens, refetchTimer, width }) => {
       <Row style={{ justifyContent: "space-between" }}>
         <Column>
           <Row>
-            <img
+            <Image
+            alt={''}
               style={{ height: "40px", width: "40px", zIndex: 2 }}
               src={activeTokens[0].icon}
             />
-            <img
+            <Image
+            alt={''}
               src={activeTokens[1].icon}
               style={{ height: "40px", width: "40px", marginLeft: "-.5rem" }}
             />
@@ -770,7 +755,7 @@ const TokenChart: React.FC<any> = ({ activeTokens, refetchTimer, width }) => {
       </Row>
       {chartData && (
         <div key={width + (chartData?.length || 0)}>
-          {/* <Chart data={chartData} handleCrossHairData={handleCrosshairData} /> */}
+          <Chart data={chartData} handleCrossHairData={handleCrosshairData} />
         </div>
       )}
     </Column>
@@ -790,7 +775,7 @@ const SwapRoute: React.FC<any> = ({ route, tokenList, activeTokens }) => {
         style={{ padding: ".5rem", width: "150px" }}
       >
         <Row style={{ alignItems: "center" }}>
-          <img style={{ height: "32px", width: "32px" }} src={token?.icon} />
+          <Image alt={''} style={{ height: "32px", width: "32px" }} src={token?.icon} />
           <Spacer 
           // size="sm" 
           />
@@ -811,7 +796,8 @@ const SwapRoute: React.FC<any> = ({ route, tokenList, activeTokens }) => {
       />
       <Row style={{ justifyContent: "space-between", alignItems: "center" }}>
         <Row style={{ alignItems: "center" }}>
-          <img
+          <Image
+          alt={''}
             style={{ height: "40px", width: "40px" }}
             src={activeTokens[0].icon}
           />
@@ -847,7 +833,8 @@ const SwapRoute: React.FC<any> = ({ route, tokenList, activeTokens }) => {
           <Spacer 
           // size="sm" 
           />
-          <img
+          <Image
+          alt={''}
             style={{ height: "40px", width: "40px" }}
             src={activeTokens[1].icon}
           />
@@ -859,7 +846,6 @@ const SwapRoute: React.FC<any> = ({ route, tokenList, activeTokens }) => {
 
 const Swap: React.FC<any> = () => {
   const { getTokenList } = useOpenOceanApi();
-  // const { walletContext } = useWalletProvider();
   const { account } = useActiveWeb3React()
   const { apiData: fantomApiData } = useFantomApiData();
   const { width } = useDetectResolutionType();
@@ -886,9 +872,6 @@ const Swap: React.FC<any> = () => {
   const [swapRoute, setSwapRoute] = useState(null);
   const [refetchTimer, setRefetchTimer] = useState(0);
   const activeAddress = account ? account : null
-  // walletContext.activeWallet.address
-  //   ? walletContext.activeWallet.address.toLowerCase()
-  //   : null;
 
   useFantomApi(
     FantomApiMethods.getAssetsListForAccount,
@@ -943,15 +926,18 @@ const Swap: React.FC<any> = () => {
             (token) =>
               token.address.toLowerCase() === OOToken.address.toLowerCase()
           );
+          const accountBalance = Number(useUserTokenInfo(account, accountToken.wrapped.address).userTokenInfo.balance)
+          const logoURI = useTokenInfo(accountToken.wrapped.address).tokenInfo.image
+
           return {
             ...OOToken,
             balanceOf:
               OOToken.address === "0x0000000000000000000000000000000000000000"
                 ? fantomBalance
                 : accountToken
-                ? accountToken.balanceOf
+                ? accountBalance
                 : "0x0",
-            logoURL: OOToken.icon,
+            logoURL: logoURI,
           };
         })
       );

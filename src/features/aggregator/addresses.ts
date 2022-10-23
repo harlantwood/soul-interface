@@ -2,15 +2,15 @@
  * See all ids below
  * https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
  */
- export const FANTOM_MAIN_ID = 250;
- export const FANTOM_TEST_ID = 4002;
  
  const commonFantomContracts = {
    sfc: "0xfc00face00000000000000000000000000000000",
  };
+
+ let addresses
  
- export default {
-   [FANTOM_MAIN_ID]: {
+ export default addresses = {
+   [250]: {
      tokens: {
        SFTM: "0x69c744d3444202d35a2783929a0f930f2fbb05ad",
      },
@@ -21,7 +21,7 @@
      govProposalPlaintext: "0xc9f5aa2c93ae9e89a77dc60e7e3cfff1234e4287",
      openOceanExchange: "0x6352a56caadC4F1E25CD6c75970Fa768A3304e64",
    },
-   [FANTOM_TEST_ID]: {
+   [4002]: {
      tokens: {
        SFTM: "0x3b28f151899bd945ac1559a3540b5741c7d2bd55",
      },

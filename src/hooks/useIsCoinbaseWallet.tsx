@@ -9,7 +9,7 @@ export default function useIsCoinbaseWallet(): boolean {
     return (
       connector instanceof WalletLinkConnector ||
       (connector instanceof InjectedConnector && window.walletLinkExtension) ||
-      window?.ethereum?.isCoinbaseWallet
+      // window?.ethereum?.isCoinbaseWallet
     )
   }, [connector])
 }
