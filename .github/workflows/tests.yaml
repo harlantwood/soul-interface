@@ -1,11 +1,7 @@
 name: Tests
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  - push
+  - pull_request
 
 jobs:
   integration-tests:
@@ -62,4 +58,3 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
       - run: yarn test
-
